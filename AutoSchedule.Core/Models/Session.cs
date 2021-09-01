@@ -10,29 +10,29 @@ namespace AutoSchedule.Core.Models
     /// </summary>
     [Serializable]
     public class Session
-    {   
+    {
         [System.Text.Json.Serialization.JsonInclude]
         [Newtonsoft.Json.JsonRequired]
         public string SessionType;
 
-        [System.Text.Json.Serialization.JsonInclude]
-        [Newtonsoft.Json.JsonRequired]
         /// <summary>
         /// Represents all time of the session. 
         /// </summary>
         /// <remarks>E.g. Mon 8:30-10:20 and Wed 8:30-10:20.</remarks>
+        [System.Text.Json.Serialization.JsonInclude]
+        [Newtonsoft.Json.JsonRequired]
         public List<SessionTime> SessionTimes;
+
+        string _sessionTimesString;
 
         [System.Text.Json.Serialization.JsonIgnore]
         [Newtonsoft.Json.JsonIgnore]
         public string SessionTimesString
         {
-            get 
-            { 
-                string output = ""; 
-                foreach (var item in SessionTimes) 
-                    output += $" {item};";
-                return output.Trim();
+            get
+            {
+                _sessionTimesString ??= string.Join(' ', SessionTimes).Trim();
+                return _sessionTimesString;
             }
         }
 
@@ -51,22 +51,28 @@ namespace AutoSchedule.Core.Models
         [Newtonsoft.Json.JsonRequired]
         public string Name { get; init; }
 
+        [System.Text.Json.Serialization.JsonInclude]
+        [Newtonsoft.Json.JsonRequired]
+        public string Location { get; init; }
+
         public Session()
         {
             SessionType = string.Empty;
             Name = string.Empty;
             Code = string.Empty;
             Instructor = string.Empty;
+            Location = string.Empty;
             SessionTimes = new List<SessionTime>();
         }
 
         public Session(string sessionType, string name, string code, string instructor,
-                       List<SessionTime> sessionTimes)
+                       string location, List<SessionTime> sessionTimes)
         {
             SessionType = sessionType;
             Name = name;
             Code = code;
             Instructor = instructor;
+            Location = location;
             SessionTimes = sessionTimes;
         }
 

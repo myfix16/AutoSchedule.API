@@ -9,6 +9,7 @@ namespace AutoSchedule.UI.Models
         public string Instructor;
         public string Code;
         public string Name;
+        public string Location;
 
         public int RowSpan;
         public bool IsPlaceHolder = false;

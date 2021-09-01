@@ -27,7 +27,7 @@
                                     SessionName=@(displayedSession.Name)
                                     SessionType=@($"{displayedSession.SessionType} {displayedSession.Code}")
                                     SessionTime=@($"{displayedSession.SessionTime.StartTime}-{displayedSession.SessionTime.EndTime}")
-                                    SessionLocation=@(string.Empty)>
+                                    SessionLocation=@(displayedSession.Location)>
                                 </AcademicCalendarItem>
                             </td>
                         }
@@ -111,6 +111,7 @@
                 Code = session.Code,
                 Name = session.Name,
                 SessionTime = newSessionTime,
+                Location = session.Location,
             });
     }
 }

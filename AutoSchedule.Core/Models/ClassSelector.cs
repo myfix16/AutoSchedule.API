@@ -11,7 +11,7 @@ namespace AutoSchedule.Core.Models
             var outcome = new List<Schedule>();
 
             // Inner function that finds all suitable schedules.
-            void Enroll(IEnumerable<IEnumerable<Session>> sessions, Schedule currentScheme, int maxSchedules=15)
+            void Enroll(IEnumerable<IEnumerable<Session>> sessions, Schedule currentScheme, int maxSchedules = 15)
             {
                 if (id >= maxSchedules) return;
 

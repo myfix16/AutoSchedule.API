@@ -18,5 +18,6 @@
     <PackageReference Include="CsvHelper" Version="27.1.1" />
     <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.20.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="OptimizedPriorityQueue" Version="5.1.0" />
   </ItemGroup>
 </Project>

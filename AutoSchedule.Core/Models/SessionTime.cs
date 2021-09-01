@@ -35,7 +35,7 @@ namespace AutoSchedule.Core.Models
         [System.Text.Json.Serialization.JsonIgnore]
         [Newtonsoft.Json.JsonIgnore]
         public int EndTimeFromMon;
-        
+
         [System.Text.Json.Serialization.JsonConstructor]
         [Newtonsoft.Json.JsonConstructor]
         public SessionTime(DayOfWeek dayOfWeek, Time startTime, Time endTime)
