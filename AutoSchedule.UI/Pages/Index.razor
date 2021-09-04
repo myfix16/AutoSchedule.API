@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using SortOrder = Syncfusion.Blazor.Lists.SortOrder
 @inject HttpClient Http
 @inject AppDataService DataService
 @inject AppDataServiceSingleton DataServiceSingleton
@@ -9,7 +10,7 @@
 <p class="ms-fontSize-20 ms-fontWeight-regular">Arrange your academic schedule easily</p>
 <br />
 
-@if (!DataService.initialized)
+@if (!DataService.Initialized)
 {
     <LoadingSpinner />
 }
@@ -62,29 +63,54 @@ else
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-12">
-                <div id="available-courses-section">
-                    <SfListBox TValue="string[]"
-                               TItem="string"
-                               DataSource=@DataService.FilteredClasses
-                               AllowDragAndDrop="false"
-                               @ref=availableCoursesListBox
-                               Scope=@availableScope
-                               SortOrder="Syncfusion.Blazor.DropDowns.SortOrder.Ascending"
-                               Height=@ListBoxHeight>
-                        <ListBoxToolbarSettings Items=@toolBarItems />
-                    </SfListBox>
+            <div class="col-lg-5">
+                <div>
+                    @* bug here,  *@
+                    <SfListView DataSource="@DataService.FilteredClasses"
+                                ShowHeader="false"
+                                Height="@ListBoxHeight"
+                                TValue="string"
+                                SortOrder="SortOrder.Ascending">
+                        <ListViewEvents TValue="string"
+                                        Clicked="@(e => selectedFilteredClass = e.ItemData)">
+                        </ListViewEvents>
+                    </SfListView>
                 </div>
-                <div id="selected-courses-section">
-                    <SfListBox TValue="string[]"
-                               TItem="string"
-                               DataSource=@DataService.SelectedClasses
-                               AllowDragAndDrop="false"
-                               @ref="selectedCoursesListBox"
-                               Scope=@selectedScope
-                               SortOrder="Syncfusion.Blazor.DropDowns.SortOrder.Ascending"
-                               Height=@ListBoxHeight>
-                    </SfListBox>
+            </div>
+            <div class="col-lg-1">
+                <div>
+                    <Stack Horizontal="false">
+                        <ChildContent>
+                            <DefaultButton Text=">>" />
+                            <DefaultButton Text=">" OnClick="@SelectClass"/>
+                            <DefaultButton Text="<" />
+                            <DefaultButton Text="<<" />
+                        </ChildContent>
+                    </Stack>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div>
+                    <SfListView DataSource="@DataService.SelectedClasses"
+                                ShowHeader="false"
+                                Height="@ListBoxHeight">
+                        <ListViewFieldSettings TValue="PriorityClass" Id="@nameof(PriorityClass.Name)" Text="@nameof(PriorityClass.Name)" />
+                        <ListViewEvents TValue="PriorityClass"
+                                        Clicked="@(e => selectedSelectedClass = e.ItemData)">
+                        </ListViewEvents>
+                        <ListViewTemplates TValue="PriorityClass">
+                            <Template>
+                                <span style="float:left; align-content:center;">@context.Name</span>
+                                <span style="float: right;">
+                                    <SfDropDownList TItem="string"
+                                                    TValue="Priority"
+                                                    @bind-Value="@context.Priority"
+                                                    DataSource="@dropdownOptions">
+                                    </SfDropDownList>
+                                </span>
+                            </Template>
+                        </ListViewTemplates>
+                    </SfListView>
                 </div>
             </div>
         </div>
@@ -120,22 +146,14 @@ else
 }
 
 @code {
-    // TODO: Note: Before figuring out how to listen to the ItemsChanged Event of SfListBox, the program will
-    // update the cod-behind value when filter is performed or make schedule button is clicked. It is
-    // not a good idea and only acts as a temporary solution.
-    // ?OnActionComplete event failed. OnItemRender event works properly but will be fired endlessly.
+    private const string ListBoxHeight = "450px";
+    
+    private readonly string[] dropdownOptions = Enum.GetNames(typeof(Priority));
 
-        private const string ListBoxHeight = "450px";
-    // Things for the dual list box
-    SfListBox<string[], string> availableCoursesListBox;
-    SfListBox<string[], string> selectedCoursesListBox;
-    SfListBox<string[], string> availableScope;
-    SfListBox<string[], string> selectedScope;
+    private string selectedFilteredClass;
+    private PriorityClass selectedSelectedClass;
+
     SfListBox<string[], Schedule> availableSchedulesListBox;
-
-    private readonly string[] toolBarItems = { "MoveTo", "MoveFrom", "MoveAllTo", "MoveAllFrom" };
-
-    private bool listBoxLinked = false;
 
     private bool noAvailableSchedule = false;
     private const string NoScheduleAvailablePrompt = "There is no available schedule for selected classes.";
@@ -145,8 +163,8 @@ else
 
     private string SearchBoxText
     {
-        get => DataService.searchBoxText;
-        set { DataService.searchBoxText = value; OnFilterChanged(); }
+        get => DataService.SearchBoxText;
+        set { DataService.SearchBoxText = value; OnFilterChanged(); }
     }
 
     protected override async Task OnInitializedAsync()
@@ -156,28 +174,14 @@ else
         await DataService.InitializeAsync(DataServiceSingleton);
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private void SelectClass()
     {
-        await base.OnAfterRenderAsync(firstRender);
-
-        if (!listBoxLinked && DataService.initialized)
+        if (selectedFilteredClass != null)
         {
-            availableScope = selectedCoursesListBox;
-            selectedScope = availableCoursesListBox;
-
-            // Re-render component to update the ListBox component Scope references in each connected ListBox.
-            StateHasChanged();
-            listBoxLinked = true;
+            DataService.SelectedClasses.Add(new PriorityClass {Name = selectedFilteredClass, Priority = Priority.Required});
+            DataService.FilteredClasses.Remove(selectedFilteredClass);
+            selectedFilteredClass = null;
         }
-    }
-
-    /// <summary>
-    /// Sync the value of backed model with that of view(listbox).
-    /// </summary>
-    private void UpdateModelValue()
-    {
-        UpdateCollectionValue(DataService.SelectedClasses, selectedCoursesListBox.GetDataList());
-        UpdateCollectionValue(DataService.FilteredClasses, availableCoursesListBox.GetDataList());
     }
 
     /// <summary>
@@ -185,10 +189,7 @@ else
     /// </summary>
     private void OnFilterChanged()
     {
-        UpdateModelValue();
-
-        var filtered = FilterClasses(DataServiceSingleton.AvailableClasses,
-            (SearchBoxText == string.Empty) ? string.Empty : SearchBoxText);
+        IEnumerable<string> filtered = FilterClasses(DataServiceSingleton.AvailableClasses, SearchBoxText);
 
         UpdateCollectionValue(DataService.FilteredClasses, filtered);
     }
@@ -199,10 +200,8 @@ else
     /// <param name="allClasses">The list of classes to filter</param>
     /// <param name="filterRef">Filter keyword</param>
     /// <returns></returns>
-    private IEnumerable<string> FilterClasses(IEnumerable<string> allClasses, string filterRef)
-        // First, filter allClasses to get matched classes. Then, delete classes that are contained in SelectedClasses.
-        => allClasses.Where(c => c.StartsWith(filterRef, StringComparison.InvariantCultureIgnoreCase))
-                     .Where(c => !DataService.SelectedClasses.Contains(c));
+    private static IEnumerable<string> FilterClasses(IEnumerable<string> allClasses, string filterRef)
+        => allClasses.Where(c => c.StartsWith(filterRef, StringComparison.InvariantCultureIgnoreCase));
 
     /// <summary>
     /// Update a collection according to a IEnumerable reference.
@@ -218,9 +217,9 @@ else
     /// <summary>
     /// Compare oldFilteredData with newFilteredData and remove non-matching data from the old one.
     /// </summary>
-    private void RemoveNonMatching(ICollection<string> oldData, IEnumerable<string> newData)
+    private static void RemoveNonMatching(ICollection<string> oldData, IEnumerable<string> newData)
     {
-        foreach (var item in oldData.Except(newData).ToList()) oldData.Remove(item);
+        foreach (string item in oldData.Except(newData).ToList()) oldData.Remove(item);
     }
 
     /// <summary>
@@ -228,13 +227,11 @@ else
     /// </summary>
     private void AddBackMissing(ICollection<string> oldData, IEnumerable<string> newData)
     {
-        foreach (var item in newData.Except(oldData).ToList()) oldData.Add(item);
+        foreach (string item in newData.Except(oldData).ToList()) oldData.Add(item);
     }
 
     private void OnClickMakeSchedule()
     {
-        UpdateModelValue();
-
         // Alert user if no class is selected.
         if (DataService.SelectedClasses.Count == 0)
         {
@@ -242,10 +239,17 @@ else
             return;
         }
 
+
         // select only lectures and generate the schedule.
-        var generatedSchedules = AutoSchedule.Core.Models.ClassSelector.FindSchedules(
-            DataServiceSingleton.AvailableSessions
-                .Where(s => DataService.SelectedClasses.Contains(s.First().GetClassifiedName())));
+        DataService.SelectedClasses.Clear();
+        foreach (PriorityClass course in DataService.SelectedClasses)
+        {
+            DataService.FinalSelectedClasses.Add(
+                new Course(DataServiceSingleton.AvailableSessions.First(g => g.Key == course.Name), course.Priority)
+            );
+        }
+        List<Schedule> generatedSchedules = AutoSchedule.Core.Models.ClassSelector.FindSchedules(
+            DataService.FinalSelectedClasses.OrderByDescending(c => c.Priority));
 
         // Alert user if there is no available schedule.
         if (generatedSchedules.Count == 0) noAvailableSchedule = true;

@@ -11,6 +11,8 @@ namespace AutoSchedule.Core.Models
     {
         public string Id = "1";
 
+        public int Priority = 0;
+
         public ObservableCollection<Session> Sessions = new();
 
         /// <summary>
@@ -31,7 +33,7 @@ namespace AutoSchedule.Core.Models
 
         public Schedule WithAdded(Session element)
         {
-            var newSchedule = ShallowCopy();
+            Schedule newSchedule = ShallowCopy();
             newSchedule.Sessions.Add(element);
             return newSchedule;
         }

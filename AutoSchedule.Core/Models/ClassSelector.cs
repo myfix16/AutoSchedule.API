@@ -5,13 +5,13 @@ namespace AutoSchedule.Core.Models
 {
     public static class ClassSelector
     {
-        public static List<Schedule> FindSchedules(IEnumerable<IEnumerable<Session>> sessionContainer)
+        public static List<Schedule> FindSchedules(IEnumerable<Course> sessionContainer)
         {
             int id = 0;
             var outcome = new List<Schedule>();
 
             // Inner function that finds all suitable schedules.
-            void Enroll(IEnumerable<IEnumerable<Session>> sessions, Schedule currentScheme, int maxSchedules = 15)
+            void Enroll(IEnumerable<Course> sessions, Schedule currentScheme, int maxSchedules = 15)
             {
                 if (id >= maxSchedules) return;
 

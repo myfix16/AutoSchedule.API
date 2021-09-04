@@ -18,20 +18,20 @@ namespace AutoSchedule.UI.Services
         /// <summary>
         /// All available sessions, grouped by class name.
         /// </summary>
-        public IEnumerable<IEnumerable<Session>> AvailableSessions;
+        public IEnumerable<IGrouping<string, Session>> AvailableSessions;
 
         /// <summary>
         /// All available class, container of sessions, such as ACT2111.
         /// </summary>
         public IEnumerable<string> AvailableClasses;
 
-        private readonly IDataProvider<IEnumerable<Session>> DataProvider;
+        readonly IDataProvider<IEnumerable<Session>> DataProvider;
 
         public const string Version = "1.1.0";
 
         public const string Term = "2021-2022 Term 1";
 
-        private bool initialized = false;
+        bool initialized = false;
 
         public AppDataServiceSingleton(IDataProvider<IEnumerable<Session>> dataProvider)
         {
