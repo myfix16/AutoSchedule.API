@@ -3,9 +3,8 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using AutoSchedule.Core.Models;
 using System.Collections.Generic;
+using System.Linq;
 using AutoSchedule.UI.Models;
-using Priority_Queue;
-using PriorityQueue = Priority_Queue.SimplePriorityQueue<AutoSchedule.Core.Models.Course, AutoSchedule.Core.Models.Priority>;
 
 namespace AutoSchedule.UI.Services
 {
@@ -36,7 +35,7 @@ namespace AutoSchedule.UI.Services
             if (!Initialized)
             {
                 await appDataServiceSingleton.InitializeAsync();
-                foreach (string item in appDataServiceSingleton.AvailableClasses) FilteredClasses.Add(item);
+                foreach (var item in appDataServiceSingleton.AvailableClasses) FilteredClasses.Add(item);
                 Initialized = true;
 
 #if DEBUG

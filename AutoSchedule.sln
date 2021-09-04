@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoSchedule.API", "AutoSch
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoSchedule.UI", "AutoSchedule.UI\AutoSchedule.UI.csproj", "{1DD99CDE-E389-4D20-ADDC-02BC2383A217}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoSchedule.Core.Test", "AutoSchedule.Core.Test\AutoSchedule.Core.Test.csproj", "{3D747025-C247-4C47-B149-B5F3A2FD2490}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,26 @@ Global
 		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Release|x64.Build.0 = Release|Any CPU
 		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Release|x86.ActiveCfg = Release|Any CPU
 		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Release|x86.Build.0 = Release|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Debug|ARM.Build.0 = Debug|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Debug|x64.Build.0 = Debug|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Debug|x86.Build.0 = Debug|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Release|ARM.ActiveCfg = Release|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Release|ARM.Build.0 = Release|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Release|ARM64.Build.0 = Release|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Release|x64.ActiveCfg = Release|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Release|x64.Build.0 = Release|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Release|x86.ActiveCfg = Release|Any CPU
+		{3D747025-C247-4C47-B149-B5F3A2FD2490}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

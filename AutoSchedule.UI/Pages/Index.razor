@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using SortOrder = Syncfusion.Blazor.Lists.SortOrder
+@using System.Linq; 
 @inject HttpClient Http
 @inject AppDataService DataService
 @inject AppDataServiceSingleton DataServiceSingleton
@@ -65,14 +66,15 @@ else
         <div class="row">
             <div class="col-lg-5">
                 <div>
-                    @* bug here,  *@
+                    @{
+// todo: Data binding doesn't support List<string>
+                    }
                     <SfListView DataSource="@DataService.FilteredClasses"
                                 ShowHeader="false"
                                 Height="@ListBoxHeight"
-                                TValue="string"
                                 SortOrder="SortOrder.Ascending">
                         <ListViewEvents TValue="string"
-                                        Clicked="@(e => selectedFilteredClass = e.ItemData)">
+                                        Clicked="@(e => _selectedFilteredClass = e.ItemData)">
                         </ListViewEvents>
                     </SfListView>
                 </div>
@@ -81,10 +83,10 @@ else
                 <div>
                     <Stack Horizontal="false">
                         <ChildContent>
-                            <DefaultButton Text=">>" />
+                            <DefaultButton Text=">>" OnClick="@SelectAllClasses"/>
                             <DefaultButton Text=">" OnClick="@SelectClass"/>
-                            <DefaultButton Text="<" />
-                            <DefaultButton Text="<<" />
+                            <DefaultButton Text="<" OnClick="@RemoveClass"/>
+                            <DefaultButton Text="<<" OnClick="@RemoveAllClasses"/>
                         </ChildContent>
                     </Stack>
                 </div>
@@ -96,7 +98,7 @@ else
                                 Height="@ListBoxHeight">
                         <ListViewFieldSettings TValue="PriorityClass" Id="@nameof(PriorityClass.Name)" Text="@nameof(PriorityClass.Name)" />
                         <ListViewEvents TValue="PriorityClass"
-                                        Clicked="@(e => selectedSelectedClass = e.ItemData)">
+                                        Clicked="@(e => _selectedSelectedClass = e.ItemData)">
                         </ListViewEvents>
                         <ListViewTemplates TValue="PriorityClass">
                             <Template>
@@ -147,11 +149,11 @@ else
 
 @code {
     private const string ListBoxHeight = "450px";
-    
+
     private readonly string[] dropdownOptions = Enum.GetNames(typeof(Priority));
 
-    private string selectedFilteredClass;
-    private PriorityClass selectedSelectedClass;
+    private string _selectedFilteredClass;
+    private PriorityClass _selectedSelectedClass = new() {Name = null, Priority = Priority.Required};
 
     SfListBox<string[], Schedule> availableSchedulesListBox;
 
@@ -174,14 +176,34 @@ else
         await DataService.InitializeAsync(DataServiceSingleton);
     }
 
+    private void SelectAllClasses()
+    {
+        // todo: implement select all button
+    }
+
     private void SelectClass()
     {
-        if (selectedFilteredClass != null)
+        if (_selectedFilteredClass != null)
         {
-            DataService.SelectedClasses.Add(new PriorityClass {Name = selectedFilteredClass, Priority = Priority.Required});
-            DataService.FilteredClasses.Remove(selectedFilteredClass);
-            selectedFilteredClass = null;
+            DataService.SelectedClasses.Add(new PriorityClass {Name = _selectedFilteredClass, Priority = Priority.Required});
+            DataService.FilteredClasses.Remove(_selectedFilteredClass);
+            _selectedFilteredClass = null;
         }
+    }
+
+    private void RemoveClass()
+    {
+        if (_selectedSelectedClass.Name != null)
+        {
+            DataService.FilteredClasses.Add(_selectedSelectedClass.Name);
+            DataService.SelectedClasses.Remove(_selectedSelectedClass);
+            _selectedSelectedClass.Name = null;
+        }
+    }
+
+    private void RemoveAllClasses()
+    {
+    // todo: implement remove all button
     }
 
     /// <summary>
@@ -189,26 +211,18 @@ else
     /// </summary>
     private void OnFilterChanged()
     {
-        IEnumerable<string> filtered = FilterClasses(DataServiceSingleton.AvailableClasses, SearchBoxText);
+        var filtered = DataServiceSingleton.AvailableClasses
+            .Where(g => g.StartsWith(SearchBoxText, StringComparison.InvariantCultureIgnoreCase));
 
         UpdateCollectionValue(DataService.FilteredClasses, filtered);
     }
-
-    /// <summary>
-    /// Filter given class list with provided keyword.
-    /// </summary>
-    /// <param name="allClasses">The list of classes to filter</param>
-    /// <param name="filterRef">Filter keyword</param>
-    /// <returns></returns>
-    private static IEnumerable<string> FilterClasses(IEnumerable<string> allClasses, string filterRef)
-        => allClasses.Where(c => c.StartsWith(filterRef, StringComparison.InvariantCultureIgnoreCase));
 
     /// <summary>
     /// Update a collection according to a IEnumerable reference.
     /// </summary>
     /// <param name="oldData">Collection to update</param>
     /// <param name="newData">Reference</param>
-    private void UpdateCollectionValue(ICollection<string> oldData, IEnumerable<string> newData)
+    private static void UpdateCollectionValue<T>(ICollection<T> oldData, IEnumerable<T> newData)
     {
         RemoveNonMatching(oldData, newData);
         AddBackMissing(oldData, newData);
@@ -217,17 +231,17 @@ else
     /// <summary>
     /// Compare oldFilteredData with newFilteredData and remove non-matching data from the old one.
     /// </summary>
-    private static void RemoveNonMatching(ICollection<string> oldData, IEnumerable<string> newData)
+    private static void RemoveNonMatching<T>(ICollection<T> oldData, IEnumerable<T> newData)
     {
-        foreach (string item in oldData.Except(newData).ToList()) oldData.Remove(item);
+        foreach (var item in oldData.Except(newData).ToList()) oldData.Remove(item);
     }
 
     /// <summary>
     /// Compare oldFilteredData with newFilteredData and add non-existing data to the old one.
     /// </summary>
-    private void AddBackMissing(ICollection<string> oldData, IEnumerable<string> newData)
+    private static void AddBackMissing<T>(ICollection<T> oldData, IEnumerable<T> newData)
     {
-        foreach (string item in newData.Except(oldData).ToList()) oldData.Add(item);
+        foreach (var item in newData.Except(oldData).ToList()) oldData.Add(item);
     }
 
     private void OnClickMakeSchedule()
@@ -248,7 +262,7 @@ else
                 new Course(DataServiceSingleton.AvailableSessions.First(g => g.Key == course.Name), course.Priority)
             );
         }
-        List<Schedule> generatedSchedules = AutoSchedule.Core.Models.ClassSelector.FindSchedules(
+        var generatedSchedules = AutoSchedule.Core.Models.ClassSelector.FindSchedules(
             DataService.FinalSelectedClasses.OrderByDescending(c => c.Priority));
 
         // Alert user if there is no available schedule.
@@ -262,8 +276,7 @@ else
     {
         if (availableSchedulesListBox.Value == null) return;
 
-        DataService.CurrentSchedule = DataService.AvailableSchedules
-            .Where(s => s.Id == availableSchedulesListBox.Value[0]).FirstOrDefault();
+        DataService.CurrentSchedule = DataService.AvailableSchedules.FirstOrDefault(s => s.Id == availableSchedulesListBox.Value[0]);
         navigationManager.NavigateTo("schedulepage");
     }
 }

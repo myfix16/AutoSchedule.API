@@ -20,9 +20,6 @@ namespace AutoSchedule.UI.Services
         /// </summary>
         public IEnumerable<IGrouping<string, Session>> AvailableSessions;
 
-        /// <summary>
-        /// All available class, container of sessions, such as ACT2111.
-        /// </summary>
         public IEnumerable<string> AvailableClasses;
 
         readonly IDataProvider<IEnumerable<Session>> DataProvider;
@@ -31,7 +28,7 @@ namespace AutoSchedule.UI.Services
 
         public const string Term = "2021-2022 Term 1";
 
-        bool initialized = false;
+        public bool Initialized = false;
 
         public AppDataServiceSingleton(IDataProvider<IEnumerable<Session>> dataProvider)
         {
@@ -43,15 +40,13 @@ namespace AutoSchedule.UI.Services
         /// </summary>
         public async Task InitializeAsync()
         {
-            if (!initialized)
+            if (!Initialized)
             {
                 foreach (var item in await DataProvider.GetSessionsAsync())
                     AvailableSessionsFlat.Add(item);
-
                 AvailableSessions = AvailableSessionsFlat.GroupBy(s => s.GetClassifiedName());
-                AvailableClasses = AvailableSessions
-                    .Select(l => l.First().GetClassifiedName()).Distinct().OrderBy(s => s);
-                initialized = true;
+                AvailableClasses = AvailableSessions.Select(g => g.Key);
+                Initialized = true;
 
 #if DEBUG
                 Console.WriteLine("DataService singleton initialized.");

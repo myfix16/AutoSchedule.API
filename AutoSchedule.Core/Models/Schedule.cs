@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Numerics;
 
 namespace AutoSchedule.Core.Models
 {
@@ -11,7 +12,27 @@ namespace AutoSchedule.Core.Models
     {
         public string Id = "1";
 
-        public int Priority = 0;
+        public struct PriorityValue : IComparable<PriorityValue>
+        {
+            public int Preferred, Optional;
+
+            /// <summary>
+            /// Compare the priority value.
+            /// </summary>
+            /// <param name="other"></param>
+            /// <returns>
+            /// positive: other has higher priority value
+            /// 0: the same
+            /// negative: this has higher priority value
+            /// </returns>
+            public int CompareTo(PriorityValue other)
+            {
+                int result = other.Preferred - Preferred;
+                return other.Preferred - Preferred == 0 ? other.Optional - Optional : result;
+            }
+        }
+
+        public PriorityValue Priority = new() { Preferred = 0, Optional = 0 };
 
         public ObservableCollection<Session> Sessions = new();
 
@@ -28,13 +49,28 @@ namespace AutoSchedule.Core.Models
                 if (session.HasConflictSession(newSession))
                     return false;
             }
+
             return true;
         }
 
-        public Schedule WithAdded(Session element)
+        public Schedule WithAdded(Session element, Priority priority)
         {
             Schedule newSchedule = ShallowCopy();
             newSchedule.Sessions.Add(element);
+            switch (priority)
+            {
+                case Models.Priority.Required:
+                    break;
+                case Models.Priority.Preferred:
+                    newSchedule.Priority.Preferred++;
+                    break;
+                case Models.Priority.Optional:
+                    newSchedule.Priority.Optional++;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(priority), priority, null);
+            }
+
             return newSchedule;
         }
 
