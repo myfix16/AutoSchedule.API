@@ -3,7 +3,7 @@
 @inject AppDataServiceSingleton DataServiceSingleton
 
 <h3 class="ms-fontSize-42 ms-fontWeight-regular">Schedules</h3>
-<br />
+
 @{
     if (!DataService.Initialized)  { <LoadingSpinner /> }
     else
@@ -11,11 +11,28 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <AcademicCalendar ScheduleSource=@DataService.CurrentSchedule />
+                    <Stack Horizontal="true" style="float: right">
+                        <DefaultButton Text="Previous" 
+                                       OnClick="ViewPreviousSchedule" 
+                                       Disabled="@(CurrentScheduleIndex <= 1)" />
+                        <Label>Schedule @DataService.CurrentSchedule.Id of @DataService.AvailableSchedules.Count</Label>
+                        <DefaultButton Text="Next" 
+                                       OnClick="ViewNextSchedule"
+                                       Disabled="@(CurrentScheduleIndex >= DataService.AvailableSchedules.Count)"/>
+                    </Stack>
                 </div>
             </div>
-            <br />
-            @if (!classConflictWarningVisible) { <br /> }
+            <br/>
+            <div class="row">
+                <div class="col-lg-12">
+                    <AcademicCalendar ScheduleSource=@DataService.CurrentSchedule/>
+                </div>
+            </div>
+            <br/>
+            @if (!classConflictWarningVisible)
+            {
+                <br/>
+            }
             @if (classConflictWarningVisible)
             {
                 <div class="row">
@@ -28,7 +45,7 @@
                         </MessageBar>
                     </div>
                 </div>
-                <br />
+                <br/>
             }
             <div class="row">
                 <div class="col-lg-9">
@@ -37,8 +54,8 @@
                             AllowSelection="false"
                             Toolbar=@tools
                             Height=@CourseSelectionHeight>
-                        <GridSearchSettings Operator=Operator.Contains IgnoreCase="true" Fields="@searchFields" />
-                        <GridPageSettings PageSize="30" />
+                        <GridSearchSettings Operator=Operator.Contains IgnoreCase="true" Fields="@searchFields"/>
+                        <GridPageSettings PageSize="30"/>
                         <GridColumns>
                             <GridColumn Width="15%">
                                 <Template>
@@ -52,9 +69,9 @@
                                             if (DataService.CurrentSchedule.Validate(session))
                                             {
                                                 DataService.CurrentSchedule.Sessions.Add(session);
-                                                if (!DataService.CurrentSchedule.Id.Contains("Modified"))
+                                                if (!DataService.CurrentSchedule.Id.Contains("*"))
                                                 {
-                                                    DataService.CurrentSchedule.Id += " Modified";
+                                                    DataService.CurrentSchedule.Id += " *";
                                                 }
                                             }
                                             else
@@ -63,13 +80,13 @@
                                             }
                                         }
                                     }
-                                    <DefaultButton Text="Add" Disabled=@disabled OnClick=@CheckAndAdd />
+                                    <DefaultButton Text="Add" Disabled=@disabled OnClick=@CheckAndAdd/>
                                 </Template>
                             </GridColumn>
-                            <GridColumn Field=@nameof(Session.Name) HeaderText="Name" TextAlign="TextAlign.Left" Width="20%" />
-                            <GridColumn Field=@nameof(Session.Code) HeaderText="Code" TextAlign="TextAlign.Left" Width="10%" />
-                            <GridColumn Field=@nameof(Session.Instructor) HeaderText="Instructor" TextAlign="TextAlign.Left" Width="20%" />
-                            <GridColumn Field=@nameof(Session.SessionTimesString) HeaderText="Time" TextAlign="TextAlign.Left" Width="45%" />
+                            <GridColumn Field=@nameof(Session.Name) HeaderText="Name" TextAlign="TextAlign.Left" Width="20%"/>
+                            <GridColumn Field=@nameof(Session.Code) HeaderText="Code" TextAlign="TextAlign.Left" Width="10%"/>
+                            <GridColumn Field=@nameof(Session.Instructor) HeaderText="Instructor" TextAlign="TextAlign.Left" Width="20%"/>
+                            <GridColumn Field=@nameof(Session.SessionTimesString) HeaderText="Time" TextAlign="TextAlign.Left" Width="45%"/>
                             @* todo: add location *@
                         </GridColumns>
                     </SfGrid>
@@ -79,28 +96,30 @@
                                 Height=@CourseSelectionHeight
                                 ShowHeader="true"
                                 HeaderTitle="Selected sessions">
-                        <ListViewFieldSettings TValue="Session" Id="Code" Text="Name" />
+                        <ListViewFieldSettings TValue="Session" Id="Code" Text="Name"/>
                         <ListViewTemplates TValue="Session">
                             <Template>
                                 @{
                                     void CheckAndDel()
                                     {
                                         DataService.CurrentSchedule.Sessions.Remove(context);
-                                        if (!DataService.CurrentSchedule.Id.Contains("Modified"))
-                                            DataService.CurrentSchedule.Id += " Modified";
-                                    };
+                                        if (!DataService.CurrentSchedule.Id.Contains("*"))
+                                            DataService.CurrentSchedule.Id += " *";
+                                    }
+
+                                    ;
                                 }
-                                <span style="float:left; align-content:center;">
-                                    <DefaultButton Text="Delete" OnClick=@CheckAndDel Style="margin:auto;" />
+                                <span style="float: left; align-content: center;">
+                                    <DefaultButton Text="Delete" OnClick=@CheckAndDel Style="margin: auto;"/>
                                 </span>
-                                <span style="float:right;">@context.Name</span>
+                                <span style="float: right;">@context.Name</span>
                             </Template>
                         </ListViewTemplates>
                     </SfListView>
                 </div>
             </div>
-            <br />
-            <br />
+            <br/>
+            <br/>
         </div>
     }
 }
@@ -114,6 +133,13 @@
 
     private bool classConflictWarningVisible = false;
 
+    private int CurrentScheduleIndex
+    {
+        get => DataService.CurrentSchedule.Id.EndsWith(" *") 
+            ? int.Parse(DataService.CurrentSchedule.Id[0..-2]) 
+            : int.Parse(DataService.CurrentSchedule.Id);
+    }
+
     private void OnDismiss() => classConflictWarningVisible = false;
 
     protected override async Task OnInitializedAsync()
@@ -122,4 +148,15 @@
         await DataServiceSingleton.InitializeAsync();
         await DataService.InitializeAsync(DataServiceSingleton);
     }
+
+    void ViewPreviousSchedule()
+    {
+        throw new NotImplementedException();
+    }
+
+    void ViewNextSchedule()
+    {
+        throw new NotImplementedException();
+    }
+
 }
