@@ -135,8 +135,8 @@
 
     private int CurrentScheduleIndex
     {
-        get => DataService.CurrentSchedule.Id.EndsWith(" *") 
-            ? int.Parse(DataService.CurrentSchedule.Id[0..-2]) 
+        get => DataService.CurrentSchedule.Id.EndsWith(" *")
+            ? int.Parse(DataService.CurrentSchedule.Id[..^2])
             : int.Parse(DataService.CurrentSchedule.Id);
     }
 
@@ -151,11 +151,13 @@
 
     void ViewPreviousSchedule()
     {
+        DataService.CurrentSchedule = DataService.AvailableSchedules[CurrentScheduleIndex - 2];
         throw new NotImplementedException();
     }
 
     void ViewNextSchedule()
     {
+        DataService.CurrentSchedule = DataService.AvailableSchedules[CurrentScheduleIndex];
         throw new NotImplementedException();
     }
 
