@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AutoSchedule.Core.Models
 {
-    public class Course: IEnumerable<Session>
+    public class Course : IEnumerable<Session>
     {
         public readonly string Name;
         public Priority Priority = Priority.Required;

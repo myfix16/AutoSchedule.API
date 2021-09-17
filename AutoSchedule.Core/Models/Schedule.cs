@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Numerics;
 
 namespace AutoSchedule.Core.Models
 {
@@ -10,6 +9,8 @@ namespace AutoSchedule.Core.Models
     [Serializable]
     public class Schedule : ICopyable<Schedule>
     {
+        [System.Text.Json.Serialization.JsonInclude]
+        [Newtonsoft.Json.JsonRequired]
         public string Id = "1";
 
         public struct PriorityValue : IComparable<PriorityValue>
@@ -32,8 +33,12 @@ namespace AutoSchedule.Core.Models
             }
         }
 
+        [System.Text.Json.Serialization.JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
         public PriorityValue Priority = new() { Preferred = 0, Optional = 0 };
 
+        [System.Text.Json.Serialization.JsonInclude]
+        [Newtonsoft.Json.JsonRequired]
         public ObservableCollection<Session> Sessions = new();
 
         /// <summary>

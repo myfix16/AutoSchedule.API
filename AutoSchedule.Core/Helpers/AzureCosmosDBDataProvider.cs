@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoSchedule.Core.Models;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
 
@@ -23,10 +21,6 @@ namespace AutoSchedule.Core.Helpers
         public async Task<IEnumerable<Session>> GetSessionsAsync()
         {
             // Get session data from Azure Cosmos DB.
-            //var cosmosClient = new CosmosClientBuilder
-            //    (GetDBConnectionString("AzureCosmosDB-ConnectionString-ReadOnly", Environment.GetEnvironmentVariable("VaultUri")))
-            //   .WithSerializerOptions(new CosmosSerializationOptions { Indented = true })
-            //   .Build();
             var cosmosClient = new CosmosClientBuilder
                 ("AccountEndpoint=https://cosmosdb-for-autoschedule.documents.azure.com:443/;AccountKey=j5rHnPcv8ZpWLhFbOFBVxz6G5QgZaIAm5lX6yNDZhifJKtVepwEUEMFHd5DblXukEodgrbXHbJQB2CgLONC2bA==;")
                .WithSerializerOptions(new CosmosSerializationOptions { Indented = true })
@@ -46,12 +40,6 @@ namespace AutoSchedule.Core.Helpers
             }
 
             return sessions;
-        }
-
-        public static string GetDBConnectionString(string vaultKey, string vaultUri)
-        {
-            var client = new SecretClient(vaultUri: new Uri(vaultUri), credential: new DefaultAzureCredential());
-            return client.GetSecret(vaultKey).Value.Value;
         }
     }
 }

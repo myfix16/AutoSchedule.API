@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using AutoSchedule.Core.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Priority_Queue;
 
 namespace AutoSchedule.Core.Test

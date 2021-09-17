@@ -2,8 +2,8 @@
 {
     public enum Priority
     {
-        Required = 128,
-        Preferred = 64,
-        Optional = 32,
+        Required,
+        Preferred,
+        Optional,
     }
 }
