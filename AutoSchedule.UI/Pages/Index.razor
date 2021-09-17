@@ -71,6 +71,7 @@ else
                     }
                     <SfListView DataSource="@DataService.FilteredClasses"
                                 ShowHeader="false"
+                                TValue="@(string.GetHashCode())"
                                 Height="@ListBoxHeight"
                                 SortOrder="SortOrder.Ascending">
                         <ListViewEvents TValue="string"
