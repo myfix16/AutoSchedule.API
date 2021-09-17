@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AutoSchedule.API.Controllers
 {
-    [EnableCors(Startup.CorsAllowSpecificOrigins)]
+    // [EnableCors(Startup.CorsAllowSpecificOrigins)]
+    [EnableCors(Startup.CorsAllowAll)]
     [Route("api/[controller]")]
     [ApiController]
     public class SessionsController : ControllerBase
@@ -22,7 +23,6 @@ namespace AutoSchedule.API.Controllers
         }
 
         // GET: api/<SessionsController>
-        [DisableCors]
         [HttpGet]
         public async Task<IEnumerable<Session>> GetSessions()
         {

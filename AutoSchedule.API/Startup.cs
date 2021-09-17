@@ -40,11 +40,11 @@ namespace AutoSchedule.API
                     .AllowAnyMethod()
                     .AllowCredentials());
 
-                // options.AddPolicy(name: CorsAllowAll, policy =>
-                //     policy.AllowAnyOrigin()
-                //         .AllowAnyHeader()
-                //         .AllowAnyMethod()
-                //         .AllowCredentials());
+                options.AddPolicy(name: CorsAllowAll, policy =>
+                    policy.SetIsOriginAllowed(origin => true)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials());
             });
         }
 
