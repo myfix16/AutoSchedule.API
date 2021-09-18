@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoSchedule.Core.Models;
-using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.Cosmos.Fluent;
+using Azure.Cosmos;
+using Azure.Cosmos.Fluent;
+using Azure.Cosmos.Serialization;
 
 namespace AutoSchedule.Core.Helpers
 {
@@ -30,13 +31,19 @@ namespace AutoSchedule.Core.Helpers
             var sqlQueryText = "SELECT * FROM c";
             var queryIterator = container.GetItemQueryIterator<Session>(new QueryDefinition(sqlQueryText));
 
+            // * v3 version of Azure Cosmos SDK
+            // //Asynchronous query execution
+            // while (queryIterator.HasMoreResults)
+            // {
+            //     foreach (var item in await queryIterator.ReadNextAsync())
+            //         sessions.Add(item);
+            // }
+
             // Fetch session data from data base.
             List<Session> sessions = new();
-            //Asynchronous query execution
-            while (queryIterator.HasMoreResults)
+            await foreach (Session session in queryIterator)
             {
-                foreach (var item in await queryIterator.ReadNextAsync())
-                    sessions.Add(item);
+                sessions.Add(session);
             }
 
             return sessions;

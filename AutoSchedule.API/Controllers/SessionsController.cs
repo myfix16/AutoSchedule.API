@@ -1,10 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using AutoSchedule.Core.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AutoSchedule.API.Controllers
 {
+#if DEBUG
+    [EnableCors(Startup.CorsAllowAllOrigins)]
+#else
+    [EnableCors(Startup.CorsAllowSpecificOrigins)]
+#endif
     [Route("api/[controller]")]
     [ApiController]
     public class SessionsController : ControllerBase

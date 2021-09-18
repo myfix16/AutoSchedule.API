@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace AutoSchedule.API
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class Program
     {
         internal static IEnumerable<Session> Sessions;

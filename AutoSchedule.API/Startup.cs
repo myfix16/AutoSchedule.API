@@ -9,7 +9,11 @@ namespace AutoSchedule.API
 {
     public class Startup
     {
-        private readonly string CorsAllowSpecificOrigins = "AllowSpecificOrigins";
+        internal const string CorsAllowAllOrigins = "AllowAllOrigins";
+        internal const string CorsAllowSpecificOrigins = "AllowSpecificOrigins";
+
+        const string APIVersion = "v2";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -24,7 +28,7 @@ namespace AutoSchedule.API
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "AutoSchedule.API", Version = "v1" });
+                c.SwaggerDoc(APIVersion, new OpenApiInfo { Title = "AutoSchedule.API", Version = APIVersion });
             });
             services.AddCors(options =>
             {
@@ -36,6 +40,12 @@ namespace AutoSchedule.API
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials());
+
+                options.AddPolicy(name: CorsAllowAllOrigins, policy =>
+                    policy.SetIsOriginAllowed(o => true)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials());
             });
         }
 
@@ -46,14 +56,14 @@ namespace AutoSchedule.API
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AutoSchedule.API v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint($"/swagger/{APIVersion}/swagger.json", $"AutoSchedule.API {APIVersion}"));
             }
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
-            app.UseCors(CorsAllowSpecificOrigins);
+            app.UseCors();
 
             app.UseAuthorization();
 
