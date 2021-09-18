@@ -12,11 +12,8 @@ namespace AutoSchedule.API.Controllers
     {
         // POST api/<ClassSelectionController>/5
         [HttpPost("{maxSchedules:int}")]
-        public IEnumerable<Schedule> MakeSchedules(int maxSchedules, IEnumerable<PriorityClass> classesToSelect)
+        public IEnumerable<Schedule> MakeSchedules(int maxSchedules, [FromBody] IEnumerable<PriorityClass> classesToSelect)
         {
-            Program.Sessions ??= Program.DataProvider.GetSessionsAsync().Result;
-            Program.GroupedSessions ??= Program.Sessions.GroupBy(s => s.GetClassifiedName());
-
             List<Course> courses = classesToSelect
                 .Select(course => new Course(
                     course.Name,

@@ -9,26 +9,27 @@ namespace AutoSchedule.API
 {
     public class Program
     {
+        // todo: depreciate Newtonsoft Json
+
         internal static IEnumerable<Session> Sessions;
 
         internal static IEnumerable<IGrouping<string, Session>> GroupedSessions;
 
-        internal static readonly IDataProvider<IEnumerable<Session>> DataProvider = new AzureCosmosDBDataProvider();
+        internal static IEnumerable<string> ClassNames;
+
+        static readonly IDataProvider<IEnumerable<Session>> DataProvider = new AzureCosmosDBDataProvider();
 
         public static void Main(string[] args)
         {
+            Sessions = DataProvider.GetSessionsAsync().Result;
+            GroupedSessions = Sessions.GroupBy(s => s.GetClassifiedName()).ToList();
+            ClassNames = GroupedSessions.Select(g => g.Key).ToList();
+
             CreateHostBuilder(args).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                //.ConfigureAppConfiguration((context, config) =>
-                //{
-                //    var keyVaultEndpoint = new Uri(Environment.GetEnvironmentVariable("VaultUri"));
-                //    config.AddAzureKeyVault(
-                //    keyVaultEndpoint,
-                //    new DefaultAzureCredential());
-                //})
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

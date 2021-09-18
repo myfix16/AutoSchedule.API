@@ -13,6 +13,7 @@
 *.sln.docstates
 Archive/
 AutoSchedule.UI.Server/Properties/
+AutoSchedule.UI/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

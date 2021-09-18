@@ -11,10 +11,10 @@ namespace AutoSchedule.API.Controllers
     {
         // GET: api/<SessionsController>
         [HttpGet]
-        public async Task<IEnumerable<Session>> GetSessions()
-        {
-            Program.Sessions ??= await Program.DataProvider.GetSessionsAsync();
-            return Program.Sessions;
-        }
+        public IEnumerable<Session> GetSessions() => Program.Sessions;
+
+        // GET: api/<SessionsController>/ClassNames
+        [HttpGet("ClassNames")]
+        public IEnumerable<string> GetClassNames() => Program.ClassNames;
     }
 }
