@@ -1,23 +1,21 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 namespace AutoSchedule.Core.Models
 {
     [Serializable]
     public struct Time : IComparable<Time>, IEquatable<Time>
     {
-        [System.Text.Json.Serialization.JsonInclude]
-        [Newtonsoft.Json.JsonRequired]
+        [JsonInclude]
         public int Hour;
 
-        [System.Text.Json.Serialization.JsonInclude]
-        [Newtonsoft.Json.JsonRequired]
+        [JsonInclude]
         public int Minute;
 
         /// <summary>
         /// Represents the time span from 00:00 to this time counted in minutes.
         /// </summary>
-        [System.Text.Json.Serialization.JsonIgnore]
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public readonly int TotalMinutes;
 
         /// <summary>
@@ -32,8 +30,7 @@ namespace AutoSchedule.Core.Models
             TotalMinutes = (Hour * 60) + Minute;
         }
 
-        [System.Text.Json.Serialization.JsonConstructor]
-        [Newtonsoft.Json.JsonConstructor]
+        [JsonConstructor]
         public Time(int hour, int minute)
         {
             if (hour is < 0 or > 23)

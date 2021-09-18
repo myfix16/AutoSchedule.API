@@ -1,11 +1,13 @@
-﻿namespace AutoSchedule.Core.Models
+﻿using System.Text.Json.Serialization;
+
+namespace AutoSchedule.Core.Models
 {
     public struct PriorityClass
     {
-        [System.Text.Json.Serialization.JsonInclude] [Newtonsoft.Json.JsonRequired]
+        [JsonInclude] 
         public string Name;
 
-        [System.Text.Json.Serialization.JsonInclude] [Newtonsoft.Json.JsonRequired]
+        [JsonInclude] 
         public Priority Priority;
     }
 }

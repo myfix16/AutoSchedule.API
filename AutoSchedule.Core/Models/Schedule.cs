@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Text.Json.Serialization;
 
 namespace AutoSchedule.Core.Models
 {
@@ -9,8 +10,7 @@ namespace AutoSchedule.Core.Models
     [Serializable]
     public class Schedule : ICopyable<Schedule>
     {
-        [System.Text.Json.Serialization.JsonInclude]
-        [Newtonsoft.Json.JsonRequired]
+        [JsonInclude]
         public string Id = "1";
 
         public struct PriorityValue : IComparable<PriorityValue>
@@ -33,12 +33,10 @@ namespace AutoSchedule.Core.Models
             }
         }
 
-        [System.Text.Json.Serialization.JsonIgnore]
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public PriorityValue Priority = new() { Preferred = 0, Optional = 0 };
 
-        [System.Text.Json.Serialization.JsonInclude]
-        [Newtonsoft.Json.JsonRequired]
+        [JsonInclude]
         public ObservableCollection<Session> Sessions = new();
 
         /// <summary>
@@ -81,8 +79,8 @@ namespace AutoSchedule.Core.Models
 
         public Schedule ShallowCopy() => new()
         {
-            Id = this.Id,
-            Sessions = new ObservableCollection<Session>(this.Sessions),
+            Id = Id,
+            Sessions = new ObservableCollection<Session>(Sessions),
         };
 
         [Obsolete("Deep copy is not available.")]

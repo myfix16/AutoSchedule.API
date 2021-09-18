@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 namespace AutoSchedule.Core.Models
 {
@@ -8,16 +9,13 @@ namespace AutoSchedule.Core.Models
     [Serializable]
     public struct SessionTime
     {
-        [System.Text.Json.Serialization.JsonInclude]
-        [Newtonsoft.Json.JsonRequired]
+        [JsonInclude]
         public DayOfWeek DayOfWeek;
 
-        [System.Text.Json.Serialization.JsonInclude]
-        [Newtonsoft.Json.JsonRequired]
+        [JsonInclude]
         public Time StartTime;
 
-        [System.Text.Json.Serialization.JsonInclude]
-        [Newtonsoft.Json.JsonRequired]
+        [JsonInclude]
         public Time EndTime;
 
         // Using delta time from Monday has problem here since Sunday is the first day in enum.
@@ -25,19 +23,16 @@ namespace AutoSchedule.Core.Models
         /// <summary>
         /// Start time counting from 00:00 Mon.
         /// </summary>
-        [System.Text.Json.Serialization.JsonIgnore]
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public int StartTimeFromMon;
 
         /// <summary>
         /// End time counting from 00:00 Mon.
         /// </summary>
-        [System.Text.Json.Serialization.JsonIgnore]
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public int EndTimeFromMon;
 
-        [System.Text.Json.Serialization.JsonConstructor]
-        [Newtonsoft.Json.JsonConstructor]
+        [JsonConstructor]
         public SessionTime(DayOfWeek dayOfWeek, Time startTime, Time endTime)
         {
             if (endTime < startTime)

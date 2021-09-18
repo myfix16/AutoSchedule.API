@@ -9,8 +9,6 @@ namespace AutoSchedule.API
 {
     public class Program
     {
-        // todo: depreciate Newtonsoft Json
-
         internal static IEnumerable<Session> Sessions;
 
         internal static IEnumerable<IGrouping<string, Session>> GroupedSessions;
