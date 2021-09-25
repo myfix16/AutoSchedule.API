@@ -15,6 +15,10 @@ namespace AutoSchedule.API.Controllers
     public class SessionsController : ControllerBase
     {
         // GET: api/<SessionsController>
+        /// <summary>
+        /// Get all available sessions in Json format.
+        /// </summary>
+        /// <returns>A list of sessions</returns>
         [HttpGet]
         public IEnumerable<Session> GetSessions() => Program.Sessions;
 

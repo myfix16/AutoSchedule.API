@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -29,6 +30,7 @@ namespace AutoSchedule.API
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc(APIVersion, new OpenApiInfo { Title = "AutoSchedule.API", Version = APIVersion });
+                c.SchemaFilter<FieldsSchemaFilter>();
             });
             services.AddCors(options =>
             {
@@ -52,12 +54,18 @@ namespace AutoSchedule.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+#if DEBUG
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint($"/swagger/{APIVersion}/swagger.json", $"AutoSchedule.API {APIVersion}"));
+#else
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint($"/swagger/{APIVersion}/swagger.json", $"AutoSchedule.API {APIVersion}"));
             }
+#endif
 
             app.UseHttpsRedirection();
 

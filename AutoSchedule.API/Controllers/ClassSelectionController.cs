@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoSchedule.Core.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Priority_Queue;
 
 namespace AutoSchedule.API.Controllers
@@ -21,8 +23,11 @@ namespace AutoSchedule.API.Controllers
         [HttpPost("{maxSchedules:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public ActionResult<IEnumerable<Schedule>> MakeSchedules(int maxSchedules, [FromBody] IEnumerable<PriorityClass> classesToSelect)
+        public ActionResult<IEnumerable<Schedule>> MakeSchedules([FromBody, BindRequired] IEnumerable<PriorityClass> classesToSelect, int maxSchedules=-1)
         {
+            // parse arguments
+            if (maxSchedules == -1) maxSchedules = int.MaxValue;
+
             List<Course> courses = classesToSelect
                 .Select(course => new Course(
                     course.Name,

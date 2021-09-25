@@ -36,7 +36,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "name": "[concat(parameters('resourceGroupName'), 'Deployment', uniqueString(concat('autoschedule-api', subscription().subscriptionId)))]",
+      "name": "[concat(parameters('resourceGroupName'), 'Deployment', uniqueString(concat('autoschedule-api-v2', subscription().subscriptionId)))]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "apiVersion": "2019-10-01",
       "dependsOn": [
@@ -95,14 +95,14 @@
             },
             {
               "type": "Microsoft.ApiManagement/service/apis",
-              "name": "AutoSchedule-API-Management/autoschedule-api",
+              "name": "AutoSchedule-API-Management/autoschedule-api-v2",
               "properties": {
                 "displayName": "AutoSchedule.API",
                 "apiRevision": "1",
                 "description": null,
-                "subscriptionRequired": true,
-                "serviceUrl": "https://api-autoschedule.azurewebsites.net:80/",
-                "path": "v1",
+                "subscriptionRequired": false,
+                "serviceUrl": "https://api-autoschedule.azurewebsites.net/",
+                "path": "",
                 "protocols": [
                   "https"
                 ],
@@ -114,7 +114,9 @@
                   "header": "Ocp-Apim-Subscription-Key",
                   "query": "subscription-key"
                 },
-                "isCurrent": true
+                "isCurrent": true,
+                "apiVersion": "v2",
+                "apiVersionSetId": "/subscriptions/91daf475-83d1-474b-9053-5c6eca24b3bc/resourceGroups/AutoScheduleResources/providers/Microsoft.ApiManagement/service/AutoSchedule-API-Management/apiVersionSets/614e03b2e40e6aa0a2f1f668"
               },
               "apiVersion": "2019-12-01",
               "dependsOn": [
