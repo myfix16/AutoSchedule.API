@@ -7,16 +7,16 @@ namespace AutoSchedule.Core.Models
     /// Represents the time of one session.
     /// </summary>
     [Serializable]
-    public struct SessionTime
+    public readonly struct SessionTime
     {
         [JsonInclude]
-        public DayOfWeek DayOfWeek;
+        public readonly DayOfWeek DayOfWeek;
 
         [JsonInclude]
-        public Time StartTime;
+        public readonly Time StartTime;
 
         [JsonInclude]
-        public Time EndTime;
+        public readonly Time EndTime;
 
         // Using delta time from Monday has problem here since Sunday is the first day in enum.
         // However, it doesn't affect the result because there is no class in the weekend.
@@ -24,13 +24,13 @@ namespace AutoSchedule.Core.Models
         /// Start time counting from 00:00 Mon.
         /// </summary>
         [JsonIgnore]
-        public int StartTimeFromMon;
+        public readonly int StartTimeFromMon;
 
         /// <summary>
         /// End time counting from 00:00 Mon.
         /// </summary>
         [JsonIgnore]
-        public int EndTimeFromMon;
+        public readonly int EndTimeFromMon;
 
         [JsonConstructor]
         public SessionTime(DayOfWeek dayOfWeek, Time startTime, Time endTime)

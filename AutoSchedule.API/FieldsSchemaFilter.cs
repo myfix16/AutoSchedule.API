@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -24,11 +24,11 @@ namespace AutoSchedule.API
             {
                 schema.Properties[field.Name] = field.FieldType.Name switch
                 {
-                    "String" => new OpenApiSchema() { Type = "string" },
+                    nameof(String) => new OpenApiSchema() { Type = "string" },
                     nameof(Priority) => new OpenApiSchema()
                     {
-                        Type = "integer", 
-                        Format = "int32", 
+                        Type = "integer",
+                        Format = "int32",
                         Enum = new List<IOpenApiAny>()
                         {
                             new OpenApiInteger(0),

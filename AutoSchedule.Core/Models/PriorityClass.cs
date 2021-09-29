@@ -1,13 +1,23 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace AutoSchedule.Core.Models
 {
     public struct PriorityClass
     {
-        [JsonInclude] 
-        public string Name;
+        [JsonConstructor]
+        public PriorityClass(string name, Priority priority)
+        {
+            Name = name;
+            Priority = priority;
+        }
 
-        [JsonInclude] 
+        [JsonInclude]
+        [Required]
+        public readonly string Name;
+
+        [JsonInclude]
+        [Required]
         public Priority Priority;
     }
 }

@@ -70,7 +70,8 @@ namespace AutoSchedule.Core.Models
         public override string ToString()
         {
             var output = $"{Name} {Code} {Instructor}";
-            foreach (var item in SessionTimes) output += $" {item}";
+            // foreach (var item in SessionTimes) output += $" {item}";
+            output += $" {SessionTimesString}";
             return output;
         }
 
@@ -81,9 +82,9 @@ namespace AutoSchedule.Core.Models
         /// <returns>true if there is time conflict, false otherwise.</returns>
         public bool HasConflictSession(Session session2)
         {
-            foreach (var sessionTime in SessionTimes)
+            foreach (SessionTime sessionTime in SessionTimes)
             {
-                foreach (var otherSessionTime in session2.SessionTimes)
+                foreach (SessionTime otherSessionTime in session2.SessionTimes)
                 {
                     if (sessionTime.ConflictWith(otherSessionTime)) return true;
                 }

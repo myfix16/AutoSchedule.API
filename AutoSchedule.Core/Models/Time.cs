@@ -1,16 +1,19 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace AutoSchedule.Core.Models
 {
     [Serializable]
-    public struct Time : IComparable<Time>, IEquatable<Time>
+    public readonly struct Time : IComparable<Time>, IEquatable<Time>
     {
         [JsonInclude]
-        public int Hour;
+        [Required]
+        public readonly int Hour;
 
         [JsonInclude]
-        public int Minute;
+        [Required]
+        public readonly int Minute;
 
         /// <summary>
         /// Represents the time span from 00:00 to this time counted in minutes.
@@ -24,9 +27,9 @@ namespace AutoSchedule.Core.Models
         /// <param name="timeString">A string representation of time, for example, 10:30.</param>
         public Time(string timeString)
         {
-            var splittedString = timeString.Replace(" ", string.Empty).Split(':');
-            Hour = int.Parse(splittedString[0]);
-            Minute = int.Parse(splittedString[1]);
+            string[] splitString = timeString.Replace(" ", string.Empty).Split(':');
+            Hour = int.Parse(splitString[0]);
+            Minute = int.Parse(splitString[1]);
             TotalMinutes = (Hour * 60) + Minute;
         }
 
