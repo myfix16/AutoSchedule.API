@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using AutoSchedule.Core.Models;
 using Priority_Queue;
 
-namespace AutoSchedule.Core.Models
+namespace AutoSchedule.Core.Helpers
 {
     public static class ClassSelector
     {

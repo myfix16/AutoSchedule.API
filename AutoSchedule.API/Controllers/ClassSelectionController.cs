@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using AutoSchedule.Core.Helpers;
 using AutoSchedule.Core.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
