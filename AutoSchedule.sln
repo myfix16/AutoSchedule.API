@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoSchedule.Core", "AutoSc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoSchedule.API", "AutoSchedule.API\AutoSchedule.API.csproj", "{0C5B570E-1C11-4F78-B774-21B8EA897A4D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoSchedule.UI", "AutoSchedule.UI\AutoSchedule.UI.csproj", "{1DD99CDE-E389-4D20-ADDC-02BC2383A217}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,26 +61,6 @@ Global
 		{0C5B570E-1C11-4F78-B774-21B8EA897A4D}.Release|x64.Build.0 = Release|Any CPU
 		{0C5B570E-1C11-4F78-B774-21B8EA897A4D}.Release|x86.ActiveCfg = Release|Any CPU
 		{0C5B570E-1C11-4F78-B774-21B8EA897A4D}.Release|x86.Build.0 = Release|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Debug|ARM.Build.0 = Debug|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Debug|ARM64.ActiveCfg = Debug|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Debug|ARM64.Build.0 = Debug|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Debug|x64.Build.0 = Debug|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Debug|x86.Build.0 = Debug|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Release|ARM.ActiveCfg = Release|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Release|ARM.Build.0 = Release|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Release|ARM64.ActiveCfg = Release|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Release|ARM64.Build.0 = Release|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Release|x64.ActiveCfg = Release|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Release|x64.Build.0 = Release|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Release|x86.ActiveCfg = Release|Any CPU
-		{1DD99CDE-E389-4D20-ADDC-02BC2383A217}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

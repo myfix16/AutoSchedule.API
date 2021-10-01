@@ -1,23 +1,24 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace AutoSchedule.Core.Models
 {
     [Serializable]
-    public struct Time : IComparable<Time>, IEquatable<Time>
+    public readonly struct Time : IComparable<Time>, IEquatable<Time>
     {
-        [System.Text.Json.Serialization.JsonInclude]
-        [Newtonsoft.Json.JsonRequired]
-        public int Hour;
+        [JsonInclude]
+        [Required]
+        public readonly int Hour;
 
-        [System.Text.Json.Serialization.JsonInclude]
-        [Newtonsoft.Json.JsonRequired]
-        public int Minute;
+        [JsonInclude]
+        [Required]
+        public readonly int Minute;
 
         /// <summary>
         /// Represents the time span from 00:00 to this time counted in minutes.
         /// </summary>
-        [System.Text.Json.Serialization.JsonIgnore]
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public readonly int TotalMinutes;
 
         /// <summary>
@@ -26,14 +27,13 @@ namespace AutoSchedule.Core.Models
         /// <param name="timeString">A string representation of time, for example, 10:30.</param>
         public Time(string timeString)
         {
-            var splittedString = timeString.Replace(" ", string.Empty).Split(':');
-            Hour = int.Parse(splittedString[0]);
-            Minute = int.Parse(splittedString[1]);
+            string[] splitString = timeString.Replace(" ", string.Empty).Split(':');
+            Hour = int.Parse(splitString[0]);
+            Minute = int.Parse(splitString[1]);
             TotalMinutes = (Hour * 60) + Minute;
         }
 
-        [System.Text.Json.Serialization.JsonConstructor]
-        [Newtonsoft.Json.JsonConstructor]
+        [JsonConstructor]
         public Time(int hour, int minute)
         {
             if (hour is < 0 or > 23)

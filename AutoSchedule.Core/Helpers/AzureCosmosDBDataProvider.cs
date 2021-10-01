@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoSchedule.Core.Models;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
-using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.Cosmos.Fluent;
+using Azure.Cosmos;
+using Azure.Cosmos.Fluent;
+using Azure.Cosmos.Serialization;
 
 namespace AutoSchedule.Core.Helpers
 {
@@ -23,10 +22,6 @@ namespace AutoSchedule.Core.Helpers
         public async Task<IEnumerable<Session>> GetSessionsAsync()
         {
             // Get session data from Azure Cosmos DB.
-            //var cosmosClient = new CosmosClientBuilder
-            //    (GetDBConnectionString("AzureCosmosDB-ConnectionString-ReadOnly", Environment.GetEnvironmentVariable("VaultUri")))
-            //   .WithSerializerOptions(new CosmosSerializationOptions { Indented = true })
-            //   .Build();
             var cosmosClient = new CosmosClientBuilder
                 ("AccountEndpoint=https://cosmosdb-for-autoschedule.documents.azure.com:443/;AccountKey=j5rHnPcv8ZpWLhFbOFBVxz6G5QgZaIAm5lX6yNDZhifJKtVepwEUEMFHd5DblXukEodgrbXHbJQB2CgLONC2bA==;")
                .WithSerializerOptions(new CosmosSerializationOptions { Indented = true })
@@ -36,22 +31,22 @@ namespace AutoSchedule.Core.Helpers
             var sqlQueryText = "SELECT * FROM c";
             var queryIterator = container.GetItemQueryIterator<Session>(new QueryDefinition(sqlQueryText));
 
+            // * v3 version of Azure Cosmos SDK
+            // //Asynchronous query execution
+            // while (queryIterator.HasMoreResults)
+            // {
+            //     foreach (var item in await queryIterator.ReadNextAsync())
+            //         sessions.Add(item);
+            // }
+
             // Fetch session data from data base.
             List<Session> sessions = new();
-            //Asynchronous query execution
-            while (queryIterator.HasMoreResults)
+            await foreach (Session session in queryIterator)
             {
-                foreach (var item in await queryIterator.ReadNextAsync())
-                    sessions.Add(item);
+                sessions.Add(session);
             }
 
             return sessions;
-        }
-
-        public static string GetDBConnectionString(string vaultKey, string vaultUri)
-        {
-            var client = new SecretClient(vaultUri: new Uri(vaultUri), credential: new DefaultAzureCredential());
-            return client.GetSecret(vaultKey).Value.Value;
         }
     }
 }

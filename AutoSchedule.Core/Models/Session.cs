@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Newtonsoft.Json;
 
 namespace AutoSchedule.Core.Models
 {
@@ -10,46 +9,42 @@ namespace AutoSchedule.Core.Models
     /// </summary>
     [Serializable]
     public class Session
-    {   
-        [System.Text.Json.Serialization.JsonInclude]
-        [Newtonsoft.Json.JsonRequired]
+    {
+        [JsonInclude]
         public string SessionType;
 
-        [System.Text.Json.Serialization.JsonInclude]
-        [Newtonsoft.Json.JsonRequired]
         /// <summary>
         /// Represents all time of the session. 
         /// </summary>
         /// <remarks>E.g. Mon 8:30-10:20 and Wed 8:30-10:20.</remarks>
+        [JsonInclude]
         public List<SessionTime> SessionTimes;
 
-        [System.Text.Json.Serialization.JsonIgnore]
-        [Newtonsoft.Json.JsonIgnore]
+        string _sessionTimesString;
+
+        [JsonIgnore]
         public string SessionTimesString
         {
-            get 
-            { 
-                string output = ""; 
-                foreach (var item in SessionTimes) 
-                    output += $" {item};";
-                return output.Trim();
+            get
+            {
+                _sessionTimesString ??= string.Join(' ', SessionTimes).Trim();
+                return _sessionTimesString;
             }
         }
 
         // ！ requires property instead of field to work properly in SFGrid
-        [System.Text.Json.Serialization.JsonInclude]
-        [Newtonsoft.Json.JsonRequired]
+        [JsonInclude]
         public string Instructor { get; init; }
 
         [JsonPropertyName("id")]
-        [JsonProperty(propertyName: "id")]
-        [System.Text.Json.Serialization.JsonInclude]
-        [Newtonsoft.Json.JsonRequired]
+        [JsonInclude]
         public string Code { get; init; }
 
-        [System.Text.Json.Serialization.JsonInclude]
-        [Newtonsoft.Json.JsonRequired]
+        [JsonInclude]
         public string Name { get; init; }
+
+        [JsonInclude]
+        public string Location { get; init; }
 
         public Session()
         {
@@ -57,23 +52,26 @@ namespace AutoSchedule.Core.Models
             Name = string.Empty;
             Code = string.Empty;
             Instructor = string.Empty;
+            Location = string.Empty;
             SessionTimes = new List<SessionTime>();
         }
 
         public Session(string sessionType, string name, string code, string instructor,
-                       List<SessionTime> sessionTimes)
+                       string location, List<SessionTime> sessionTimes)
         {
             SessionType = sessionType;
             Name = name;
             Code = code;
             Instructor = instructor;
+            Location = location;
             SessionTimes = sessionTimes;
         }
 
         public override string ToString()
         {
             var output = $"{Name} {Code} {Instructor}";
-            foreach (var item in SessionTimes) output += $" {item}";
+            // foreach (var item in SessionTimes) output += $" {item}";
+            output += $" {SessionTimesString}";
             return output;
         }
 
@@ -84,9 +82,9 @@ namespace AutoSchedule.Core.Models
         /// <returns>true if there is time conflict, false otherwise.</returns>
         public bool HasConflictSession(Session session2)
         {
-            foreach (var sessionTime in SessionTimes)
+            foreach (SessionTime sessionTime in SessionTimes)
             {
-                foreach (var otherSessionTime in session2.SessionTimes)
+                foreach (SessionTime otherSessionTime in session2.SessionTimes)
                 {
                     if (sessionTime.ConflictWith(otherSessionTime)) return true;
                 }

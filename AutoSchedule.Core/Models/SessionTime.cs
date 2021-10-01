@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 namespace AutoSchedule.Core.Models
 {
@@ -6,38 +7,32 @@ namespace AutoSchedule.Core.Models
     /// Represents the time of one session.
     /// </summary>
     [Serializable]
-    public struct SessionTime
+    public readonly struct SessionTime
     {
-        [System.Text.Json.Serialization.JsonInclude]
-        [Newtonsoft.Json.JsonRequired]
-        public DayOfWeek DayOfWeek;
+        [JsonInclude]
+        public readonly DayOfWeek DayOfWeek;
 
-        [System.Text.Json.Serialization.JsonInclude]
-        [Newtonsoft.Json.JsonRequired]
-        public Time StartTime;
+        [JsonInclude]
+        public readonly Time StartTime;
 
-        [System.Text.Json.Serialization.JsonInclude]
-        [Newtonsoft.Json.JsonRequired]
-        public Time EndTime;
+        [JsonInclude]
+        public readonly Time EndTime;
 
         // Using delta time from Monday has problem here since Sunday is the first day in enum.
         // However, it doesn't affect the result because there is no class in the weekend.
         /// <summary>
         /// Start time counting from 00:00 Mon.
         /// </summary>
-        [System.Text.Json.Serialization.JsonIgnore]
-        [Newtonsoft.Json.JsonIgnore]
-        public int StartTimeFromMon;
+        [JsonIgnore]
+        public readonly int StartTimeFromMon;
 
         /// <summary>
         /// End time counting from 00:00 Mon.
         /// </summary>
-        [System.Text.Json.Serialization.JsonIgnore]
-        [Newtonsoft.Json.JsonIgnore]
-        public int EndTimeFromMon;
-        
-        [System.Text.Json.Serialization.JsonConstructor]
-        [Newtonsoft.Json.JsonConstructor]
+        [JsonIgnore]
+        public readonly int EndTimeFromMon;
+
+        [JsonConstructor]
         public SessionTime(DayOfWeek dayOfWeek, Time startTime, Time endTime)
         {
             if (endTime < startTime)

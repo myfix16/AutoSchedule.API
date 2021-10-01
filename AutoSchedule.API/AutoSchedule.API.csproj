@@ -10,10 +10,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.1" />
-    <PackageReference Include="Azure.Identity" Version="1.4.1" />
-    <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.2.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.5" />
+    <_WebToolingArtifacts Remove="Properties\PublishProfiles\API-AutoSchedule - Web Deploy - Debug.pubxml" />
+    <_WebToolingArtifacts Remove="Properties\PublishProfiles\API-AutoSchedule - Web Deploy - Release.pubxml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.2" />
   </ItemGroup>
 
   <ItemGroup>

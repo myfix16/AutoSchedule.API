@@ -2,15 +2,16 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
 namespace AutoSchedule.API
 {
     public class Startup
     {
+        internal const string CorsAllowAllOrigins = "AllowAllOrigins";
         internal const string CorsAllowSpecificOrigins = "AllowSpecificOrigins";
-        internal const string CorsAllowAll = "AllowAllOrigins";
+
+        const string APIVersion = "v2";
 
         public Startup(IConfiguration configuration)
         {
@@ -26,7 +27,8 @@ namespace AutoSchedule.API
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "AutoSchedule.API", Version = "v1" });
+                c.SwaggerDoc(APIVersion, new OpenApiInfo { Title = "AutoSchedule.API", Version = APIVersion });
+                c.SchemaFilter<FieldsSchemaFilter>();
             });
             // Add Cors policy
             services.AddCors(options =>
@@ -40,8 +42,8 @@ namespace AutoSchedule.API
                     .AllowAnyMethod()
                     .AllowCredentials());
 
-                options.AddPolicy(name: CorsAllowAll, policy =>
-                    policy.SetIsOriginAllowed(origin => true)
+                options.AddPolicy(name: CorsAllowAllOrigins, policy =>
+                    policy.SetIsOriginAllowed(o => true)
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials());
@@ -51,12 +53,18 @@ namespace AutoSchedule.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+#if DEBUG
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint($"/swagger/{APIVersion}/swagger.json", $"AutoSchedule.API {APIVersion}"));
+#else
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AutoSchedule.API v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint($"/swagger/{APIVersion}/swagger.json", $"AutoSchedule.API {APIVersion}"));
             }
+#endif
 
             app.UseHttpsRedirection();
 

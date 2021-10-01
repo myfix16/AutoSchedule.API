@@ -1,35 +1,53 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Priority_Queue;
 
 namespace AutoSchedule.Core.Models
 {
     public static class ClassSelector
     {
-        public static List<Schedule> FindSchedules(IEnumerable<IEnumerable<Session>> sessionContainer)
+        /// <summary>
+        /// Find schedules based on given courses.
+        /// </summary>
+        /// <param name="allCourses">A list of courses that need to be enrolled, ordered descending by priority.</param>
+        /// <param name="maxSchedules">Specify the maximum number of schedule to provide.</param>
+        /// <returns>Possible schedules</returns>
+        public static SimplePriorityQueue<Schedule, Schedule.PriorityValue> FindSchedules(IEnumerable<Course> allCourses, int maxSchedules = 10)
         {
             int id = 0;
-            var outcome = new List<Schedule>();
+            var outcome = new SimplePriorityQueue<Schedule, Schedule.PriorityValue>(); // A min-heap
 
-            // Inner function that finds all suitable schedules.
-            void Enroll(IEnumerable<IEnumerable<Session>> sessions, Schedule currentScheme, int maxSchedules=15)
+            // Inner function that finds all suitable schedules. The core idea is Eight Queen, modified with priority
+            void Enroll(IEnumerable<Course> courses, Schedule currentSchedule, int _maxSchedules)
             {
-                if (id >= maxSchedules) return;
+                if (id >= _maxSchedules) return;
 
-                if (!sessions.Any())
+                if (courses.Any())
                 {
-                    outcome.Add(currentScheme);
-                    currentScheme.Id = (++id).ToString();
+                    Course currentCourse = courses.First();
+                    IEnumerable<Session> validSessions = currentCourse.Where(currentSchedule.Validate);
+                    // if this course can be added, add it normally
+                    if (validSessions.Any())
+                    {
+                        foreach (Session session in validSessions)
+                        {
+                            Enroll(courses.Skip(1), currentSchedule.WithAdded(session, currentCourse.Priority), _maxSchedules);
+                        }
+                    }
+                    // if this course cannot be added but this course is not required, skip it and continue
+                    else if (currentCourse.Priority != Priority.Required)
+                    {
+                        Enroll(courses.Skip(1), currentSchedule, _maxSchedules);
+                    }
                 }
                 else
                 {
-                    foreach (var session in sessions.First().Where(l => currentScheme.Validate(l)))
-                    {
-                        Enroll(sessions.Skip(1), currentScheme.WithAdded(session));
-                    }
+                    outcome.Enqueue(currentSchedule, currentSchedule.Priority);
+                    currentSchedule.Id = (++id).ToString();
                 }
             }
 
-            Enroll(sessionContainer, new Schedule { Id = id.ToString() });
+            Enroll(allCourses, new Schedule { Id = id.ToString() }, maxSchedules);
 
             return outcome;
         }

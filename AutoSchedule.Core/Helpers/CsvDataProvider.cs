@@ -10,14 +10,14 @@ namespace AutoSchedule.Core.Helpers
 {
     public class CsvDataProvider : IDataProvider<IEnumerable<Session>>
     {
-        private readonly string csvDirectionPath;
+        readonly string _csvDirectionPath;
 
-        public CsvDataProvider(string csvPath) => csvDirectionPath = csvPath;
+        public CsvDataProvider(string csvPath) => _csvDirectionPath = csvPath;
 
         public IEnumerable<Session> GetSessions()
         {
             List<Session> sessions = new();
-            foreach (var path in Directory.GetFiles(csvDirectionPath, "*.csv"))
+            foreach (string path in Directory.GetFiles(_csvDirectionPath, "*.csv"))
             {
                 sessions.AddRange(ReadSessions(path));
             }
@@ -27,7 +27,7 @@ namespace AutoSchedule.Core.Helpers
         [Obsolete("This is actually a fake async method using await new Task.")]
         public async Task<IEnumerable<Session>> GetSessionsAsync()
         {
-            return await new Task<IEnumerable<Session>>(() => ReadSessions(csvDirectionPath));
+            return await new Task<IEnumerable<Session>>(() => ReadSessions(_csvDirectionPath));
         }
 
         private static IEnumerable<Session> ReadSessions(string csvPath)
@@ -39,20 +39,21 @@ namespace AutoSchedule.Core.Helpers
             csv.ReadHeader();
             while (csv.Read())
             {
-                var codeField = csv.GetField("Code");
-                var name = $"{csv.GetField("Name").Split('-')[0]} {codeField[0..3]}";
-                var sessionType = codeField[4..7];
-                var instructor = csv.GetField("Instructor");
-                var timesField = csv.GetField("Time").Split(';');
+                string codeField = csv.GetField("Code");
+                string name = $"{csv.GetField("Name").Split('-')[0]} {codeField[0..3]}";
+                string sessionType = codeField[4..7];
+                string instructor = csv.GetField("Instructor");
+                string location = csv.GetField("Location");
+                string[] timesField = csv.GetField("Time").Split(';');
                 if (timesField[0] == "TBA") continue;
                 var sessionTimes = new List<SessionTime>();
-                foreach (var timeString in timesField)
+                foreach (string timeString in timesField)
                 {
-                    var splittedTime = timeString.Split(' ');
+                    string[] splittedTime = timeString.Split(' ');
                     // Do something.
                     for (int i = 0; i < splittedTime[0].Length; i += 2)
                     {
-                        var dayOfWeek = splittedTime[0][i..(i + 2)] switch
+                        DayOfWeek dayOfWeek = splittedTime[0][i..(i + 2)] switch
                         {
                             "Mo" => DayOfWeek.Monday,
                             "Tu" => DayOfWeek.Tuesday,
@@ -65,7 +66,7 @@ namespace AutoSchedule.Core.Helpers
                     }
                 }
                 // 2. split each item such as WeFr 10:00-11:00
-                sessions.Add(new Session(sessionType, name, codeField[8..12], instructor, sessionTimes));
+                sessions.Add(new Session(sessionType, name, codeField[8..12], instructor, location, sessionTimes));
             }
             return sessions;
         }
