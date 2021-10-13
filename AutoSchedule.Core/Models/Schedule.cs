@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text.Json.Serialization;
+using AutoSchedule.Core.Helpers;
 
 namespace AutoSchedule.Core.Models
 {
@@ -10,14 +12,14 @@ namespace AutoSchedule.Core.Models
     /// A schedule that contains all class selected.
     /// </summary>
     [Serializable]
-    public class Schedule : ICopyable<Schedule>
+    public class Schedule
     {
         [JsonInclude]
         public string Id = "1";
-        
+
         public struct PriorityValue : IComparable<PriorityValue>
         {
-            public int Preferred, Optional;
+            public int PreferredNum, OptionalNum, LocationPriority;
 
             /// <summary>
             /// Compare the priority value.
@@ -30,13 +32,22 @@ namespace AutoSchedule.Core.Models
             /// </returns>
             public int CompareTo(PriorityValue other)
             {
-                int result = other.Preferred - Preferred;
-                return other.Preferred - Preferred == 0 ? other.Optional - Optional : result;
+                // 1st rule: select schedules with most preferred and then optional classes
+                int classNumResult = CompareClassNum(other);
+                if (classNumResult != 0) return classNumResult;
+                // 2nd rule: select schedules without adjacent sessions whose locations are far from each other
+                return other.LocationPriority - LocationPriority;
+            }
+
+            private int CompareClassNum(PriorityValue other)
+            {
+                int result = other.PreferredNum - PreferredNum;
+                return other.PreferredNum - PreferredNum == 0 ? other.OptionalNum - OptionalNum : result;
             }
         }
 
         [JsonIgnore]
-        public PriorityValue Priority = new() { Preferred = 0, Optional = 0 };
+        public PriorityValue Priority = new() { PreferredNum = 0, OptionalNum = 0, LocationPriority = 0 };
 
         [JsonInclude]
         public ObservableCollection<Session> Sessions = new();
@@ -54,6 +65,19 @@ namespace AutoSchedule.Core.Models
             { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         };
 
+        static readonly double SpeedThreshold;
+
+        public Schedule()
+        {
+        }
+
+        [JsonConstructor]
+        public Schedule(string id, IEnumerable<Session> sessions)
+        {
+            Id = id;
+            Sessions = new ObservableCollection<Session>(sessions);
+        }
+
         static Schedule()
         {
             // fill in the symmetric part of LocationDistance
@@ -64,6 +88,10 @@ namespace AutoSchedule.Core.Models
                     LocationDistance[row, col] = LocationDistance[col, row];
                 }
             }
+
+            // todo: find a good speed threshold
+            // use the distance between TA and ChengDao / 15 min as the threshold of bad schedule
+            SpeedThreshold = (double)LocationDistance[0, 3] / 15;
         }
 
         /// <summary>
@@ -78,19 +106,23 @@ namespace AutoSchedule.Core.Models
         {
             Schedule newSchedule = ShallowCopy();
             newSchedule.Sessions.Add(element);
+            // update newSchedule's PreferredNum and OptionalNum
             switch (priority)
             {
                 case Models.Priority.Required:
                     break;
                 case Models.Priority.Preferred:
-                    newSchedule.Priority.Preferred++;
+                    newSchedule.Priority.PreferredNum++;
                     break;
                 case Models.Priority.Optional:
-                    newSchedule.Priority.Optional++;
+                    newSchedule.Priority.OptionalNum++;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(priority), priority, null);
             }
+
+            // update newSchedule's LocationPriority
+            newSchedule.Priority.LocationPriority = newSchedule.GetLocationPriority();
 
             return newSchedule;
         }
@@ -98,26 +130,47 @@ namespace AutoSchedule.Core.Models
         public Schedule ShallowCopy() => new()
         {
             Id = Id,
+            Priority = Priority,
             Sessions = new ObservableCollection<Session>(Sessions),
         };
 
-        [Obsolete("Deep copy is not available.")]
-        public Schedule DeepCopy()
-        {
-            throw new NotImplementedException("Deep copy is not available.");
-        }
-
+        /// <summary>
+        /// Currently, this will return a negative int if there are adjacent classes located far away.
+        /// It will return 0 otherwise.
+        /// </summary>
+        /// <returns></returns>
         int GetLocationPriority()
         {
-            if (Sessions.Count == 1) return 1;
-            // todo: fill in GetLocationPriority
-            List<Session> sessions = Sessions.OrderBy(s => s.SessionTimes[0].StartTimeFromMon)
-                                             .ToList();
-            for (int i = 1; i < sessions.Count; i++)
+            if (Sessions.Count == 1) return 0;
+
+            int priority = 0;
+
+            var splitSessions = Sessions.SelectMany(s => s.SessionTimes,
+                (s, t) => new
+                {
+                    SessionType = s.SessionType,
+                    Location = s.Location,
+                    Time = t
+                }).OrderBy(s => s.Time.StartTimeFromMon).ToList();
+
+            // if there are two adjacent sessions whose locations are far from each other, priority--;
+            for (int i = 0, iMax = splitSessions.Count - 1; i < iMax; ++i)
             {
-                
+                var lastClass = splitSessions[i];
+                var nextClass = splitSessions[i + 1];
+                ClassRoom lastRoom = ClassRoomParser.FromString(lastClass.Location);
+                ClassRoom nextRoom = ClassRoomParser.FromString(nextClass.Location);
+                double speed = (double)LocationDistance[(int)lastRoom, (int)nextRoom] /
+                               (nextClass.Time.StartTimeFromMon - lastClass.Time.EndTimeFromMon);
+                if (speed > SpeedThreshold) --priority;
             }
-            throw new NotImplementedException();
+
+            return priority;
+        }
+
+        void UpdateLocationPriority(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            Priority.LocationPriority = GetLocationPriority();
         }
     }
 }

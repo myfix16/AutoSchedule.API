@@ -93,6 +93,10 @@ namespace AutoSchedule.Core.Models
             return false;
         }
 
+        /// <summary>
+        /// Return a session-invariant class name. E.g. ACT2111 L01 -> ACT2111 LEC; CSC3001 T05 -> CSC3001 TUT.
+        /// </summary>
+        /// <returns>A new string representing session-invariant class name</returns>
         public string GetClassifiedName() => $"{Name.Split(' ')[0]} {SessionType}";
     }
 }
