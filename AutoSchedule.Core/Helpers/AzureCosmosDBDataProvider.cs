@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoSchedule.Core.Models;
 using Azure.Cosmos;
@@ -11,24 +10,18 @@ namespace AutoSchedule.Core.Helpers
     /// <summary>
     /// A helper class that renders data from data source. 
     /// </summary>
-    public class AzureCosmosDBDataProvider : IDataProvider<IEnumerable<Session>>
+    public class AzureCosmosDBDataProvider : IDataProviderAsync<IEnumerable<Session>>
     {
-        [Obsolete("Do not use sync method in this class.")]
-        public IEnumerable<Session> GetSessions()
-        {
-            return GetSessionsAsync().Result;
-        }
+        const string ReadOnlyConnectionString = "AccountEndpoint=https://cosmosdb-for-autoschedule.documents.azure.com:443/;AccountKey=j5rHnPcv8ZpWLhFbOFBVxz6G5QgZaIAm5lX6yNDZhifJKtVepwEUEMFHd5DblXukEodgrbXHbJQB2CgLONC2bA==;";
 
-        public async Task<IEnumerable<Session>> GetSessionsAsync()
+        public async Task<IEnumerable<Session>> GetDataAsync()
         {
-            // Get session data from Azure Cosmos DB.
-            var cosmosClient = new CosmosClientBuilder
-                ("AccountEndpoint=https://cosmosdb-for-autoschedule.documents.azure.com:443/;AccountKey=j5rHnPcv8ZpWLhFbOFBVxz6G5QgZaIAm5lX6yNDZhifJKtVepwEUEMFHd5DblXukEodgrbXHbJQB2CgLONC2bA==;")
-               .WithSerializerOptions(new CosmosSerializationOptions { Indented = true })
-               .Build();
+            var cosmosClient = new CosmosClientBuilder(ReadOnlyConnectionString)
+                .WithSerializerOptions(new CosmosSerializationOptions { Indented = true })
+                .Build();
             var container = cosmosClient.GetDatabase("SessionsData").GetContainer("2021-2022-Term1");
 
-            var sqlQueryText = "SELECT * FROM c";
+            const string sqlQueryText = "SELECT * FROM c";
             var queryIterator = container.GetItemQueryIterator<Session>(new QueryDefinition(sqlQueryText));
 
             // * v3 version of Azure Cosmos SDK

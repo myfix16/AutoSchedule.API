@@ -34,6 +34,12 @@ namespace AutoSchedule.Core.Helpers
                         {
                             Enroll(courses.Skip(1), currentSchedule.WithAdded(session, currentCourse.Priority), _maxSchedules);
                         }
+                        // for non-compulsory course, skip it and continue recursion
+                        // to get possible schedules without this course
+                        if (currentCourse.Priority != Priority.Required)
+                        {
+                            Enroll(courses.Skip(1), currentSchedule, _maxSchedules);
+                        }
                     }
                     // if this course cannot be added but this course is not required, skip it and continue
                     else if (currentCourse.Priority != Priority.Required)

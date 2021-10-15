@@ -35,8 +35,9 @@ namespace AutoSchedule.API.Controllers
                     course.Priority))
                 .ToList();
 
+            // higher priority value => lower priority, therefore, the sequence is required-preferred-optional
             SimplePriorityQueue<Schedule, Schedule.PriorityValue> schedules = ClassSelector.FindSchedules(
-                courses.OrderByDescending(c => c.Priority), maxSchedules);
+                courses.OrderBy(c => c.Priority), maxSchedules);
 
             if (schedules.Count == 0) return NoContent();
 

@@ -12,11 +12,42 @@ namespace AutoSchedule.Core.Models
     /// A schedule that contains all class selected.
     /// </summary>
     [Serializable]
-    public class Schedule
+    public class Schedule : IEquatable<Schedule>
     {
-        [JsonInclude]
-        public string Id = "1";
+        static readonly int[,] LocationDistance = new int[9, 9]
+        {
+            { 0, 3, 1, 15, 14, 13, 12, 18, 15 },
+            { 0, 0, 3, 13, 12, 11, 10, 19, 16 },
+            { 0, 0, 0, 16, 15, 14, 13, 16, 13 },
+            { 0, 0, 0, 0, 1, 2, 3, 5, 4 },
+            { 0, 0, 0, 0, 0, 1, 2, 6, 5 },
+            { 0, 0, 0, 0, 0, 0, 1, 7, 6 },
+            { 0, 0, 0, 0, 0, 0, 0, 8, 7 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 3 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        };
 
+        static readonly double SpeedThreshold;
+        static Schedule()
+        {
+            // fill in the symmetric part of LocationDistance
+            for (int row = 0; row < 9; row++)
+            {
+                for (int col = 0; col < row; col++)
+                {
+                    LocationDistance[row, col] = LocationDistance[col, row];
+                }
+            }
+
+            // todo: find a good speed threshold
+            // use the distance between TA and ChengDao / 15 min as the threshold of bad schedule
+            SpeedThreshold = (double)LocationDistance[0, 3] / 15;
+        }
+
+        [JsonInclude]
+        public string Id { get; set; } = "1";
+
+        [Serializable]
         public struct PriorityValue : IComparable<PriorityValue>
         {
             public int PreferredNum, OptionalNum, LocationPriority;
@@ -50,26 +81,9 @@ namespace AutoSchedule.Core.Models
         public PriorityValue Priority = new() { PreferredNum = 0, OptionalNum = 0, LocationPriority = 0 };
 
         [JsonInclude]
-        public ObservableCollection<Session> Sessions = new();
+        public ObservableCollection<Session> Sessions { get; set; } = new();
 
-        static readonly int[,] LocationDistance = new int[9, 9]
-        {
-            { 0, 3, 1, 15, 14, 13, 12, 18, 15 },
-            { 0, 0, 3, 13, 12, 11, 10, 19, 16 },
-            { 0, 0, 0, 16, 15, 14, 13, 16, 13 },
-            { 0, 0, 0, 0, 1, 2, 3, 5, 4 },
-            { 0, 0, 0, 0, 0, 1, 2, 6, 5 },
-            { 0, 0, 0, 0, 0, 0, 1, 7, 6 },
-            { 0, 0, 0, 0, 0, 0, 0, 8, 7 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 3 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        };
-
-        static readonly double SpeedThreshold;
-
-        public Schedule()
-        {
-        }
+        public Schedule() { }
 
         [JsonConstructor]
         public Schedule(string id, IEnumerable<Session> sessions)
@@ -78,21 +92,6 @@ namespace AutoSchedule.Core.Models
             Sessions = new ObservableCollection<Session>(sessions);
         }
 
-        static Schedule()
-        {
-            // fill in the symmetric part of LocationDistance
-            for (int row = 0; row < 9; row++)
-            {
-                for (int col = 0; col < row; col++)
-                {
-                    LocationDistance[row, col] = LocationDistance[col, row];
-                }
-            }
-
-            // todo: find a good speed threshold
-            // use the distance between TA and ChengDao / 15 min as the threshold of bad schedule
-            SpeedThreshold = (double)LocationDistance[0, 3] / 15;
-        }
 
         /// <summary>
         /// Validate whether one session can be successfully added.
@@ -168,9 +167,15 @@ namespace AutoSchedule.Core.Models
             return priority;
         }
 
-        void UpdateLocationPriority(object sender, NotifyCollectionChangedEventArgs e)
+        void UpdateLocationPriority(object sender, NotifyCollectionChangedEventArgs e) => Priority.LocationPriority = GetLocationPriority();
+
+        public bool Equals(Schedule other)
         {
-            Priority.LocationPriority = GetLocationPriority();
+            if (other == null) return false;
+            return ReferenceEquals(this, other) || Sessions.SequenceEqual(other.Sessions);
         }
+
+        public static bool operator ==(Schedule s1, Schedule s2) => s1 is null ? s2 is null : s1.Equals(s2);
+        public static bool operator !=(Schedule s1, Schedule s2) => !(s1 == s2);
     }
 }

@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using AutoSchedule.Core.Helpers;
 using AutoSchedule.Core.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -38,6 +41,11 @@ namespace AutoSchedule.Core.Test
                 new(DayOfWeek.Monday, new Time(13, 30), new Time(15,50)),
                 new(DayOfWeek.Wednesday, new Time(13, 30), new Time(15,50)),
             }),
+            new Session("LEC", "Subject4 L01", "1005", "Staff", "Teaching A 102", new List<SessionTime>()
+            {
+                new(DayOfWeek.Monday, new Time(10, 30), new Time(15,50)),
+                new(DayOfWeek.Wednesday, new Time(10, 30), new Time(15,50)),
+            }),
         };
 
         static readonly List<IGrouping<string, Session>> GroupedSessions =
@@ -46,17 +54,32 @@ namespace AutoSchedule.Core.Test
         [TestMethod]
         public void TestClassNumPriority()
         {
-            // todo: fill class number priority test
             List<PriorityClass> classesToSelect = new()
             {
                 new PriorityClass("Subject1 LEC", Priority.Required),
                 new PriorityClass("Subject2 LEC", Priority.Preferred),
+                new PriorityClass("Subject4 LEC", Priority.Preferred),
                 new PriorityClass("Subject3 LEC", Priority.Optional),
             };
 
-            SimplePriorityQueue<Schedule, Schedule.PriorityValue> schedules = GenerateSchedules(classesToSelect);
+            List<Schedule> result = GenerateSchedules(classesToSelect);
 
-            Console.WriteLine("Finished");
+            IFormatter formatter = new BinaryFormatter();
+            var path = $"{ProjectSourcePath.Value}\\TestClassNumPriorityRef.bin";
+            // // Serialize the correct result to a file
+            // using (FileStream outputFileStream = File.OpenWrite(path))
+            // {
+            //     formatter.Serialize(outputFileStream, result);
+            // }
+
+            // De-serialize previously checked result
+            List<Schedule> reference;
+            using (FileStream inputFileStream = File.OpenRead(path))
+            {
+                reference = formatter.Deserialize(inputFileStream) as List<Schedule>;
+            }
+
+            Assert.IsTrue(reference.SequenceEqual(result));
         }
 
         [TestMethod]
@@ -69,17 +92,27 @@ namespace AutoSchedule.Core.Test
                 new PriorityClass("Subject3 LEC", Priority.Optional),
             };
 
-            SimplePriorityQueue<Schedule, Schedule.PriorityValue> schedules = GenerateSchedules(classesToSelect);
-            List<Schedule> result = new(schedules.Count);
-            while (schedules.Count != 0)
+            List<Schedule> result = GenerateSchedules(classesToSelect);
+
+            IFormatter formatter = new BinaryFormatter();
+            var path = $"{ProjectSourcePath.Value}\\TestLocationPriorityRef.bin";
+            // // Serialize the correct result to a file
+            // using (FileStream outputFileStream = File.OpenWrite(path))
+            // {
+            //     formatter.Serialize(outputFileStream, result);
+            // }
+
+            // De-serialize previously checked result
+            List<Schedule> reference;
+            using (FileStream inputFileStream = File.OpenRead(path))
             {
-                result.Add(schedules.Dequeue());
+                reference = formatter.Deserialize(inputFileStream) as List<Schedule>;
             }
-            CollectionAssert.AreEqual(result.OrderByDescending(s => s.Priority.LocationPriority).ToList(), result);
+
+            Assert.IsTrue(reference.SequenceEqual(result));
         }
 
-        private static SimplePriorityQueue<Schedule, Schedule.PriorityValue> GenerateSchedules(
-            IEnumerable<PriorityClass> classesToSelect, int maxSchedules = 10)
+        static List<Schedule> GenerateSchedules(IEnumerable<PriorityClass> classesToSelect, int maxSchedules = 10)
         {
             List<Course> courses = classesToSelect
                 .Select(course => new Course(
@@ -88,10 +121,17 @@ namespace AutoSchedule.Core.Test
                     course.Priority))
                 .ToList();
 
+            // higher priority value => lower priority, therefore, the sequence is required-preferred-optional
             SimplePriorityQueue<Schedule, Schedule.PriorityValue> schedules = ClassSelector.FindSchedules(
-                courses.OrderByDescending(c => c.Priority), maxSchedules);
+                courses.OrderBy(c => c.Priority), maxSchedules);
 
-            return schedules;
+            List<Schedule> result = new(schedules.Count);
+            while (schedules.Count != 0)
+            {
+                result.Add(schedules.Dequeue());
+            }
+
+            return result;
         }
     }
 }

@@ -8,17 +8,17 @@ namespace AutoSchedule.Core.Models
     /// A base class of actual class sessions.
     /// </summary>
     [Serializable]
-    public class Session
+    public class Session : IEquatable<Session>
     {
         [JsonInclude]
-        public string SessionType;
+        public string SessionType { get; init; }
 
         /// <summary>
         /// Represents all time of the session. 
         /// </summary>
         /// <remarks>E.g. Mon 8:30-10:20 and Wed 8:30-10:20.</remarks>
         [JsonInclude]
-        public List<SessionTime> SessionTimes;
+        public List<SessionTime> SessionTimes { get; init; }
 
         string _sessionTimesString;
 
@@ -67,6 +67,17 @@ namespace AutoSchedule.Core.Models
             SessionTimes = sessionTimes;
         }
 
+        public bool Equals(Session other)
+        {
+            if (other == null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return SessionType == other.SessionType
+                   && Name == other.Name
+                   && Code == other.Code
+                   && Instructor == other.Instructor
+                   && SessionTimesString == other.SessionTimesString;
+        }
+
         public override string ToString()
         {
             var output = $"{Name} {Code} {Instructor}";
@@ -98,5 +109,15 @@ namespace AutoSchedule.Core.Models
         /// </summary>
         /// <returns>A new string representing session-invariant class name</returns>
         public string GetClassifiedName() => $"{Name.Split(' ')[0]} {SessionType}";
+
+        public override bool Equals(object obj) => obj is Session other && Equals(other);
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(SessionType, SessionTimes, _sessionTimesString, Instructor, Code, Name, Location);
+        }
+
+        public static bool operator ==(Session s1, Session s2) => s1 is null ? s2 is null : s1.Equals(s2);
+        public static bool operator !=(Session s1, Session s2) => !(s1 == s2);
     }
 }

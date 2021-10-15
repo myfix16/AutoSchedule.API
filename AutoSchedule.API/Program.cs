@@ -16,11 +16,11 @@ namespace AutoSchedule.API
 
         internal static IEnumerable<string> ClassNames;
 
-        static readonly IDataProvider<IEnumerable<Session>> DataProvider = new AzureCosmosDBDataProvider();
+        static readonly IDataProviderAsync<IEnumerable<Session>> DataProvider = new AzureCosmosDBDataProvider();
 
         public static void Main(string[] args)
         {
-            Sessions = DataProvider.GetSessionsAsync().Result;
+            Sessions = DataProvider.GetDataAsync().Result;
             GroupedSessions = Sessions.GroupBy(s => s.GetClassifiedName()).ToList();
             ClassNames = GroupedSessions.Select(g => g.Key).ToList();
 
