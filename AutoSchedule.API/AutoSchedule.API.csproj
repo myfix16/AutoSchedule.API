@@ -22,4 +22,8 @@
     <ProjectReference Include="..\AutoSchedule.Core\AutoSchedule.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\robots.txt" />
+  </ItemGroup>
+
 </Project>
