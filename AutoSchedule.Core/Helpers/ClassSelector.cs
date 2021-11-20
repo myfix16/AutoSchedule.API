@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AutoSchedule.Core.Models;
-using Priority_Queue;
 
 namespace AutoSchedule.Core.Helpers
 {
@@ -13,10 +12,10 @@ namespace AutoSchedule.Core.Helpers
         /// <param name="allCourses">A list of courses that need to be enrolled, ordered descending by priority.</param>
         /// <param name="maxSchedules">Specify the maximum number of schedule to provide.</param>
         /// <returns>Possible schedules</returns>
-        public static SimplePriorityQueue<Schedule, Schedule.PriorityValue> FindSchedules(IEnumerable<Course> allCourses, int maxSchedules = 10)
+        public static PriorityQueue<Schedule, Schedule.PriorityValue> FindSchedules(IEnumerable<Course> allCourses, int maxSchedules = 10)
         {
             int id = 0;
-            var outcome = new SimplePriorityQueue<Schedule, Schedule.PriorityValue>(); // A min-heap
+            var outcome = new PriorityQueue<Schedule, Schedule.PriorityValue>(); // A min-heap
 
             // Inner function that finds all suitable schedules. The core idea is Eight Queen, modified with priority
             void Enroll(IEnumerable<Course> courses, Schedule currentSchedule, int _maxSchedules)

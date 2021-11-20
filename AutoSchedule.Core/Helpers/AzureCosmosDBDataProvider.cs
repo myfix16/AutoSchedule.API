@@ -13,13 +13,21 @@ namespace AutoSchedule.Core.Helpers
     public class AzureCosmosDBDataProvider : IDataProviderAsync<IEnumerable<Session>>
     {
         const string ReadOnlyConnectionString = "AccountEndpoint=https://cosmosdb-for-autoschedule.documents.azure.com:443/;AccountKey=j5rHnPcv8ZpWLhFbOFBVxz6G5QgZaIAm5lX6yNDZhifJKtVepwEUEMFHd5DblXukEodgrbXHbJQB2CgLONC2bA==;";
+        readonly string _dataBase;
+        readonly string _container;
+
+        public AzureCosmosDBDataProvider(string dataBase, string container)
+        {
+            _dataBase = dataBase;
+            _container = container;
+        }
 
         public async Task<IEnumerable<Session>> GetDataAsync()
         {
             var cosmosClient = new CosmosClientBuilder(ReadOnlyConnectionString)
                 .WithSerializerOptions(new CosmosSerializationOptions { Indented = true })
                 .Build();
-            var container = cosmosClient.GetDatabase("SessionsData").GetContainer("2021-2022-Term1");
+            var container = cosmosClient.GetDatabase(_dataBase).GetContainer(_container);
 
             const string sqlQueryText = "SELECT * FROM c";
             var queryIterator = container.GetItemQueryIterator<Session>(new QueryDefinition(sqlQueryText));

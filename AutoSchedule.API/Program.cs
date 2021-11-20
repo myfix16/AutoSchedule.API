@@ -16,7 +16,7 @@ namespace AutoSchedule.API
 
         internal static IEnumerable<string> ClassNames;
 
-        static readonly IDataProviderAsync<IEnumerable<Session>> DataProvider = new AzureCosmosDBDataProvider();
+        static readonly IDataProviderAsync<IEnumerable<Session>> DataProvider = new AzureCosmosDBDataProvider("SessionsData", "2021-2022-Term2");
 
         public static void Main(string[] args)
         {

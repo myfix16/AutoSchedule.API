@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Priority_Queue;
 
 namespace AutoSchedule.API.Controllers
 {
@@ -36,7 +35,7 @@ namespace AutoSchedule.API.Controllers
                 .ToList();
 
             // higher priority value => lower priority, therefore, the sequence is required-preferred-optional
-            SimplePriorityQueue<Schedule, Schedule.PriorityValue> schedules = ClassSelector.FindSchedules(
+            PriorityQueue<Schedule, Schedule.PriorityValue> schedules = ClassSelector.FindSchedules(
                 courses.OrderBy(c => c.Priority), maxSchedules);
 
             if (schedules.Count == 0) return NoContent();

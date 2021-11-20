@@ -7,7 +7,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 using AutoSchedule.Core.Helpers;
 using AutoSchedule.Core.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Priority_Queue;
 
 namespace AutoSchedule.Core.Test
 {
@@ -122,7 +121,7 @@ namespace AutoSchedule.Core.Test
                 .ToList();
 
             // higher priority value => lower priority, therefore, the sequence is required-preferred-optional
-            SimplePriorityQueue<Schedule, Schedule.PriorityValue> schedules = ClassSelector.FindSchedules(
+            PriorityQueue<Schedule, Schedule.PriorityValue> schedules = ClassSelector.FindSchedules(
                 courses.OrderBy(c => c.Priority), maxSchedules);
 
             List<Schedule> result = new(schedules.Count);
