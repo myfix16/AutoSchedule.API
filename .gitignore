@@ -6,7 +6,6 @@
 # Other files
 Archive/
 AutoSchedule.UI.Server/Properties/
-AutoSchedule.UI/
 *.zip
 
 # User-specific files

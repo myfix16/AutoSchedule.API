@@ -14,6 +14,7 @@ namespace AutoSchedule.Core.Models
     [Serializable]
     public class Schedule : IEquatable<Schedule>
     {
+        [JsonIgnore]
         static readonly int[,] LocationDistance = new int[9, 9]
         {
             { 0, 3, 1, 15, 14, 13, 12, 18, 15 },
@@ -27,7 +28,9 @@ namespace AutoSchedule.Core.Models
             { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         };
 
+        [JsonIgnore]
         static readonly double SpeedThreshold;
+
         static Schedule()
         {
             // fill in the symmetric part of LocationDistance

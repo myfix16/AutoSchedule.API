@@ -32,7 +32,7 @@ namespace AutoSchedule.Core.Models
             }
         }
 
-        // ！ requires property instead of field to work properly in SFGrid
+        // ! requires property instead of field to work properly in SFGrid
         [JsonInclude]
         public string Instructor { get; init; }
 
@@ -56,6 +56,7 @@ namespace AutoSchedule.Core.Models
             SessionTimes = new List<SessionTime>();
         }
 
+        [JsonConstructor]
         public Session(string sessionType, string name, string code, string instructor,
                        string location, List<SessionTime> sessionTimes)
         {

@@ -7,7 +7,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoSchedule.Core", "AutoSc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoSchedule.API", "AutoSchedule.API\AutoSchedule.API.csproj", "{0C5B570E-1C11-4F78-B774-21B8EA897A4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoSchedule.Core.Test", "AutoSchedule.Core.Test\AutoSchedule.Core.Test.csproj", "{2F1BD4E8-A8EF-4D5B-B094-2A6D5C0C0D63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoSchedule.Core.Test", "AutoSchedule.Core.Test\AutoSchedule.Core.Test.csproj", "{2F1BD4E8-A8EF-4D5B-B094-2A6D5C0C0D63}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoSchedule.UI", "AutoSchedule.UI\AutoSchedule.UI.csproj", "{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决方案项", "{F24CCA74-2511-41BC-819A-6336EC82B653}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +93,26 @@ Global
 		{2F1BD4E8-A8EF-4D5B-B094-2A6D5C0C0D63}.Release|x64.Build.0 = Release|Any CPU
 		{2F1BD4E8-A8EF-4D5B-B094-2A6D5C0C0D63}.Release|x86.ActiveCfg = Release|Any CPU
 		{2F1BD4E8-A8EF-4D5B-B094-2A6D5C0C0D63}.Release|x86.Build.0 = Release|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Debug|ARM.Build.0 = Debug|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Debug|x64.Build.0 = Debug|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Debug|x86.Build.0 = Debug|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Release|ARM.ActiveCfg = Release|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Release|ARM.Build.0 = Release|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Release|ARM64.Build.0 = Release|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Release|x64.ActiveCfg = Release|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Release|x64.Build.0 = Release|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Release|x86.ActiveCfg = Release|Any CPU
+		{8ADFA8FF-DF7C-42EF-8406-901F0E6723F9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

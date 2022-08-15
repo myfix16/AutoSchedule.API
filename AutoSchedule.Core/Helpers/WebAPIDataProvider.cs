@@ -6,12 +6,19 @@ using AutoSchedule.Core.Models;
 
 namespace AutoSchedule.Core.Helpers
 {
-    public class WebAPIDataProvider : IDataProviderAsync<IEnumerable<Session>>
+    public class WebAPIDataProvider<T> : IDataProviderAsync<T>
     {
-        public async Task<IEnumerable<Session>> GetDataAsync()
+        private readonly string _url;
+
+        public WebAPIDataProvider(string requestUrl)
+        {
+            _url = requestUrl;
+        }
+
+        public async Task<T> GetDataAsync()
         {
             using var client = new HttpClient();
-            return await client.GetFromJsonAsync<IEnumerable<Session>>("https://api-autoschedule.azurewebsites.net/api/sessions");
+            return await client.GetFromJsonAsync<T>(_url);
         }
     }
 }
