@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoSchedule.Core.Helpers;
 using AutoSchedule.Core.Models;
@@ -15,10 +14,9 @@ namespace AutoSchedule.UI.Services
         /// </summary>
         private readonly Dictionary<string, ObservableCollection<Session>> _availableSessionsFlatContainer = new();
 
-        IDataProviderAsync<IEnumerable<Session>> _sessionDataProvider;
-        IDataProviderAsync<IEnumerable<string>> _termDataProvider;
+        public WebApiManager WebApiManager;
 
-        public const string Version = "1.1.0";
+        public const string Version = "1.2.0";
 
         public IEnumerable<string> Terms;
 
@@ -40,14 +38,12 @@ namespace AutoSchedule.UI.Services
         private async Task InitializeAsyncActual()
         {
 #if DEBUG
-            _sessionDataProvider = new WebAPIDataProvider<IEnumerable<Session>>("https://localhost:44320/api/sessions");
-            _termDataProvider = new WebAPIDataProvider<IEnumerable<string>>("https://localhost:44320/api/terms");
+            WebApiManager = new WebApiManager("https://localhost:44320/api");
 #else
-            SessionDataProvider = new WebAPIDataProvider<IEnumerable<Session>>("https://api-autoschedule.azurewebsites.net/api/sessions");
-            TermDataProvider = new WebAPIDataProvider<IEnumerable<string>>("https://api-autoschedule.azurewebsites.net/api/terms");
+            WebApiManager = new WebApiManager("https://api-autoschedule.azurewebsites.net/api");
 #endif
 
-            Terms = await _termDataProvider.GetDataAsync();
+            Terms = await WebApiManager.GetTerms();
 
             _initialized = true;
 #if DEBUG
@@ -67,7 +63,7 @@ namespace AutoSchedule.UI.Services
         private async Task LoadSessionData(string term)
         {
             ObservableCollection<Session> sessionsFlat = new();
-            foreach (var item in await _sessionDataProvider.GetDataAsync())
+            foreach (var item in await WebApiManager.GetSessions(term))
             {
                 sessionsFlat.Add(item);
             }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoSchedule.Core.Helpers;
 using AutoSchedule.Core.Models;
 
 namespace AutoSchedule.UI.Services
@@ -99,6 +98,7 @@ namespace AutoSchedule.UI.Services
         {
             SelectedTerm = term;
             Initialized = false;
+            TermChanged?.Invoke(this, EventArgs.Empty);
             await LoadSessionData(term);
             Initialized = true;
             TermChanged?.Invoke(this, EventArgs.Empty);

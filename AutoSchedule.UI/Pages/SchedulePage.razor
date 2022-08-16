@@ -52,10 +52,6 @@
                                             if (DataService.CurrentSchedule.Validate(session))
                                             {
                                                 DataService.CurrentSchedule.Sessions.Add(session);
-                                                if (!DataService.CurrentSchedule.Id.Contains("Modified"))
-                                                {
-                                                    DataService.CurrentSchedule.Id += " Modified";
-                                                }
                                             }
                                             else
                                             {

@@ -18,19 +18,24 @@ namespace AutoSchedule.API.Controllers
     [ApiController]
     public class ClassSelectionController : ControllerBase
     {
-        // POST api/<ClassSelectionController>/5
-        [HttpPost("{maxSchedules:int}")]
+        // POST api/<ClassSelectionController>
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public ActionResult<IEnumerable<Schedule>> MakeSchedules([FromBody, BindRequired] IEnumerable<PriorityClass> classesToSelect, int maxSchedules = -1)
+        public ActionResult<IEnumerable<Schedule>> MakeSchedules(
+            [FromBody, BindRequired] IEnumerable<PriorityClass> classesToSelect,
+            [FromQuery(Name = "term")] string term,
+            [FromQuery(Name = "maxSchedules")] int maxSchedules = -1)
         {
             // parse arguments
             if (maxSchedules == -1) maxSchedules = int.MaxValue;
 
+            if (!Program.GroupedSessions.ContainsKey(term)) Program.PrepareData(term);
+
             List<Course> courses = classesToSelect
                 .Select(course => new Course(
                     course.Name,
-                    Program.GroupedSessions.First(g => g.Key == course.Name),
+                    Program.GroupedSessions[term].First(g => g.Key == course.Name),
                     course.Priority))
                 .ToList();
 

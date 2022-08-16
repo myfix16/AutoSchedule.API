@@ -11,10 +11,7 @@
 <p class="ms-fontSize-20 ms-fontWeight-regular">Arrange your academic schedule easily</p>
 <br />
 
-@if (!DataService.Initialized)
-{
-    <LoadingSpinner />
-}
+@if (!DataService.Initialized) { <LoadingSpinner />}
 else
 {
     <div class="container">
@@ -279,10 +276,8 @@ else
         // select only lectures and generate the schedule.
         int maxSchedules = 5;
         List<PriorityClass> selectedClasses = DataService.SelectedClasses.Select(cls => new PriorityClass(cls, Priority.Required)).ToList();
-        var result = await Http.PostAsJsonAsync(
-            $"https://api-autoschedule.azurewebsites.net/api/classselection/{maxSchedules}",
-            selectedClasses);
-        var generatedSchedules = JsonSerializer.Deserialize<List<Schedule>>(result.Content.ReadAsStream(), jsonSerializerOptions);
+        var generatedSchedules = (await DataServiceSingleton.WebApiManager
+            .GenerateSchedules(DataService.SelectedTerm, selectedClasses, maxSchedules)).ToList();
 
         // Alert user if there is no available schedule.
         if (generatedSchedules.Count == 0) noAvailableSchedule = true;
@@ -297,7 +292,8 @@ else
         if (availableSchedulesListBox.Value == null) return;
 
         DataService.CurrentSchedule = DataService.AvailableSchedules
-            .FirstOrDefault(s => s.Id == availableSchedulesListBox.Value[0]);
+            .First(s => s.Id == availableSchedulesListBox.Value[0])
+            .ShallowCopy();
         NavigationManager.NavigateTo("schedulepage");
     }
 }
