@@ -7,7 +7,7 @@ namespace AutoSchedule.Core.Models
     /// Represents the time of one session.
     /// </summary>
     [Serializable]
-    public readonly struct SessionTime
+    public readonly struct SessionTime : IEquatable<SessionTime>
     {
         [JsonInclude]
         public readonly DayOfWeek DayOfWeek;
@@ -47,6 +47,9 @@ namespace AutoSchedule.Core.Models
 
         public bool ConflictWith(SessionTime sessionTime2)
             => !(StartTimeFromMon > sessionTime2.EndTimeFromMon || EndTimeFromMon < sessionTime2.StartTimeFromMon);
+
+        public bool Equals(SessionTime other)
+            => StartTimeFromMon == other.StartTimeFromMon && EndTimeFromMon == other.EndTimeFromMon;
 
         public override string ToString() => $"{DayOfWeek} {StartTime}-{EndTime}";
     }

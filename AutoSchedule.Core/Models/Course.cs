@@ -27,6 +27,8 @@ namespace AutoSchedule.Core.Models
             Priority = coursePriority;
         }
 
+        public override string ToString() => $"{Name} - {Priority}";
+
         public IEnumerator<Session> GetEnumerator() => Sessions.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

@@ -19,5 +19,10 @@ namespace AutoSchedule.Core.Models
         [JsonInclude]
         [Required]
         public Priority Priority;
+
+        public override string ToString()
+        {
+            return $"{Name}-{Priority}";
+        }
     }
 }

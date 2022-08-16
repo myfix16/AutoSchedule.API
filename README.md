@@ -38,8 +38,8 @@ The program is deployed on Azure📦. You can access it from **[Here](https://au
 ## 🤝Contributing
 ### Build and run
 Prerequists:  
-+ [.NET 5 SDK](https://dotnet.microsoft.com/download)
-+ Visual Studio 2019 or Visual Studio for Mac 2019
++ [.NET 6 SDK](https://dotnet.microsoft.com/download)
++ Visual Studio 2022 or Visual Studio for Mac 2022
 
 Explaination of projects:
 + **AutoSchedule.Core**: A library that defines the basic classes and implements core course selection mechanism.

@@ -1,0 +1,64 @@
+﻿@inherits LayoutComponentBase
+@inject AppDataServiceSingleton DataServiceSingleton
+@inject AppDataService DataService
+@using BlazorFluentUI.Routing;
+
+<div class="page">
+    <div class="container">
+        <div class="top-row px-4">
+            <Stack Style="width:100%;">
+                <NavBar Header="Auto Schedule" Direction="LayoutDirection.Horizontal" Items="@_navItems"
+                        Style="vertical-align:central;">
+                    <FooterTemplate>
+                        <Dropdown ItemsSource="@_termList"
+                                  Placeholder="Select a term"
+                                  OnChange="@OnSelectedTermChanged"
+                                  Style="width:200px;"
+                                  DropdownWidth="200"
+                                  DropdownHeight="150"
+                                  @ref="@_termDropdown" />
+                        <Microsoft.AspNetCore.Components.Routing.NavLink class="nav-link" href="about">
+                            About
+                        </Microsoft.AspNetCore.Components.Routing.NavLink>
+                    </FooterTemplate>
+                </NavBar>
+            </Stack>
+        </div>
+
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<NavBarItem> _navItems;
+
+    private Dropdown _termDropdown;
+    readonly ObservableCollection<IDropdownOption> _termList = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _navItems = new List<NavBarItem> {
+            new() { Text= "Home", Url="", NavMatchType= NavMatchType.AnchorOnly, Id="home", IconName="home", Key="1"},
+            new() { Text= "Schedule", Url="schedulepage", NavMatchType= NavMatchType.AnchorOnly, Id="schedulePage", IconName="calendar_ltr", Key="3" },
+        };
+
+        await DataServiceSingleton.InitializeAsync();
+        await DataService.InitializeAsync(DataServiceSingleton);
+
+        foreach (string term in DataServiceSingleton.Terms)
+        {
+            _termList.Add(new DropdownOption {Key = term, Text = term, ItemType = SelectableOptionMenuItemType.Normal});
+        }
+
+        _termDropdown.AddSelection(DataService.SelectedTerm);
+
+        await base.OnInitializedAsync();
+    }
+
+    async void OnSelectedTermChanged(DropdownChangeArgs args)
+    {
+        await DataService.SetSelectedTerm(args.Option.Key);
+    }
+}

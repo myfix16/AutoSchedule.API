@@ -51,6 +51,8 @@ namespace AutoSchedule.Core.Models
 
         public bool Equals(Time other) => TotalMinutes == other.TotalMinutes;
 
+        public override bool Equals(object obj) => obj is Time other && Equals(other);
+
         public override int GetHashCode() => TotalMinutes.GetHashCode();
 
         public override string ToString() => $"{Hour}:{(Minute == 0 ? "00" : Minute)}";

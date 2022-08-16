@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Threading.Tasks;
 using AutoSchedule.Core.Models;
 using CsvHelper;
 
@@ -14,7 +13,7 @@ namespace AutoSchedule.Core.Helpers
 
         public CsvDataProvider(string csvPath) => _csvDirectionPath = csvPath;
 
-        public IEnumerable<Session> GetSessions()
+        public IEnumerable<Session> GetData()
         {
             List<Session> sessions = new();
             foreach (string path in Directory.GetFiles(_csvDirectionPath, "*.csv"))
@@ -22,12 +21,6 @@ namespace AutoSchedule.Core.Helpers
                 sessions.AddRange(ReadSessions(path));
             }
             return sessions;
-        }
-
-        [Obsolete("This is actually a fake async method using await new Task.")]
-        public async Task<IEnumerable<Session>> GetSessionsAsync()
-        {
-            return await new Task<IEnumerable<Session>>(() => ReadSessions(_csvDirectionPath));
         }
 
         private static IEnumerable<Session> ReadSessions(string csvPath)
@@ -49,11 +42,11 @@ namespace AutoSchedule.Core.Helpers
                 var sessionTimes = new List<SessionTime>();
                 foreach (string timeString in timesField)
                 {
-                    string[] splittedTime = timeString.Split(' ');
+                    string[] splitTime = timeString.Split(' ');
                     // Do something.
-                    for (int i = 0; i < splittedTime[0].Length; i += 2)
+                    for (int i = 0; i < splitTime[0].Length; i += 2)
                     {
-                        DayOfWeek dayOfWeek = splittedTime[0][i..(i + 2)] switch
+                        DayOfWeek dayOfWeek = splitTime[0][i..(i + 2)] switch
                         {
                             "Mo" => DayOfWeek.Monday,
                             "Tu" => DayOfWeek.Tuesday,
@@ -62,7 +55,7 @@ namespace AutoSchedule.Core.Helpers
                             "Fr" => DayOfWeek.Friday,
                             _ => throw new NotImplementedException("No such weekday.")
                         };
-                        sessionTimes.Add(new SessionTime(dayOfWeek, new Time(splittedTime[1]), new Time(splittedTime[3])));
+                        sessionTimes.Add(new SessionTime(dayOfWeek, new Time(splitTime[1]), new Time(splitTime[3])));
                     }
                 }
                 // 2. split each item such as WeFr 10:00-11:00

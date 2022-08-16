@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TypeScriptTarget>ES6</TypeScriptTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TypeScriptTarget>ES6</TypeScriptTarget>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+	
+  <PropertyGroup>
+	<BlazorEnableTimeZoneSupport>false</BlazorEnableTimeZoneSupport>
+  </PropertyGroup>
+
+  <PropertyGroup>
+	<InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="desktop.ini" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_WebToolingArtifacts Remove="Properties\PublishProfiles\AutoSchedule - Release - Web Deploy.pubxml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--<PackageReference Include="BlazorFluentUI.BFUBaseComponent" Version="4.0.2" />
+    <PackageReference Include="BlazorFluentUI.BFUButton" Version="4.0.2" />
+    <PackageReference Include="BlazorFluentUI.BFUComponentStyle" Version="4.0.2" />
+    <PackageReference Include="BlazorFluentUI.BFUIcon" Version="4.0.2" />
+    <PackageReference Include="BlazorFluentUI.BFULayer" Version="4.0.2" />
+    <PackageReference Include="BlazorFluentUI.BFULink" Version="4.0.2" />
+    <PackageReference Include="BlazorFluentUI.BFUNav" Version="4.0.2" />
+    <PackageReference Include="BlazorFluentUI.BFUNavBar" Version="4.0.2" />
+    <PackageReference Include="BlazorFluentUI.BFUPopup" Version="4.0.2" />
+    <PackageReference Include="BlazorFluentUI.BFUResponsiveLayout" Version="4.0.2" />
+    <PackageReference Include="BlazorFluentUI.BFUSpinner" Version="4.0.2" />
+    <PackageReference Include="BlazorFluentUI.BFUTheme" Version="4.0.2" />-->
+    <PackageReference Include="BlazorFluentUI.CoreComponents" Version="6.0.2" />
+    <PackageReference Include="BlazorFluentUI.ListComponents" Version="6.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.7" PrivateAssets="all" />
+    <PackageReference Include="Syncfusion.Blazor.Core" Version="20.2.0.39" />
+    <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="20.2.0.39" />
+    <PackageReference Include="Syncfusion.Blazor.Grid" Version="20.2.0.39" />
+    <PackageReference Include="Syncfusion.Blazor.Lists" Version="20.2.0.39" />
+    <PackageReference Include="Syncfusion.Blazor.Themes" Version="20.2.0.39" />
+    <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AutoSchedule.Core\AutoSchedule.Core.csproj" />
+  </ItemGroup>
+
+</Project>
