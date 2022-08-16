@@ -5,14 +5,9 @@
 
 <div class="page">
     <div class="container">
-        @*<div class="top-row px-4">
-        <NavLink class="nav-link" href="about">
-        About
-        </NavLink>
-        </div>*@
         <div class="top-row px-4">
             <Stack Style="width:100%;">
-                <NavBar Header="Auto Schedule" Direction="LayoutDirection.Horizontal" Items=@_navItems
+                <NavBar Header="Auto Schedule" Direction="LayoutDirection.Horizontal" Items="@_navItems"
                         Style="vertical-align:central;">
                     <FooterTemplate>
                         <Dropdown ItemsSource="@_termList"
@@ -45,8 +40,8 @@
     protected override async Task OnInitializedAsync()
     {
         _navItems = new List<NavBarItem> {
-            new() { Text= "Home", Url="", NavMatchType= NavMatchType.AnchorOnly, Id="home", IconName="Home", Key="1"},
-            new() { Text= "Schedule", Url="schedulepage", NavMatchType= NavMatchType.AnchorOnly, Id="schedulePage", IconName="Calendar", Key="3" },
+            new() { Text= "Home", Url="", NavMatchType= NavMatchType.AnchorOnly, Id="home", IconName="home", Key="1"},
+            new() { Text= "Schedule", Url="schedulepage", NavMatchType= NavMatchType.AnchorOnly, Id="schedulePage", IconName="calendar_ltr", Key="3" },
         };
 
         await DataServiceSingleton.InitializeAsync();

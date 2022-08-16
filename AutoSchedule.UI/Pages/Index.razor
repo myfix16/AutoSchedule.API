@@ -1,13 +1,10 @@
 ﻿@page "/"
-@using System.Net.Http;
-@using System.Net.Http.Json;
-@using System.Collections.Generic;
 @using System.Linq;
 @using System.Text.Json
 @inject HttpClient Http
 @inject AppDataService DataService
 @inject AppDataServiceSingleton DataServiceSingleton
-@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+@inject NavigationManager NavigationManager
 @inject IJSRuntime JsRuntime
 
 <h3 class="ms-fontSize-42 ms-fontWeight-regular">Welcome to Auto Schedule</h3>
@@ -68,29 +65,31 @@ else
         </div>
         <div class="row">
             <div class="col-lg-12">
-                <div id="available-courses-section">
+                <div style="width: 42%; float: left">
                     <SfListBox TValue="string[]"
-                               TItem="string"
-                               DataSource=@DataService.FilteredClasses
-                               AllowDragAndDrop="false"
-                               Scope="selectedScope"
-                               @ref=availableCoursesListBox
-                               @attributes=@availableListBoxAttr
-                               SortOrder="Syncfusion.Blazor.DropDowns.SortOrder.Ascending"
-                               Height=@ListBoxHeight>
-                        <ListBoxToolbarSettings Items=@toolBarItems />
+                           TItem="string"
+                           DataSource=@DataService.FilteredClasses
+                           AllowDragAndDrop="false"
+                           @ref=availableCoursesListBox
+                           SortOrder="Syncfusion.Blazor.DropDowns.SortOrder.Ascending"
+                           Height=@ListBoxHeight>
                     </SfListBox>
                 </div>
-                <div id="selected-courses-section">
+                <div style="width: 3%; float: left; margin-left: 8px">
+                    <Stack Tokens=@(new StackTokens { ChildrenGap = new[] { 10.0 }, Padding = "5px 2px" })>
+                        <DefaultButton Text="Add" OnClick="OnClickMoveTo"/>
+                        <DefaultButton Text="Remove" OnClick="OnClickMoveFrom"/>
+                        <DefaultButton Text="Remove all" OnClick="OnClickMoveAllFrom"/>
+                    </Stack>
+                </div>
+                <div style="width: 48%; float: right">
                     <SfListBox TValue="string[]"
-                               TItem="string"
-                               DataSource=@DataService.SelectedClasses
-                               AllowDragAndDrop="false"
-                               Scope="availableScope"
-                               @ref="selectedCoursesListBox"
-                               @attributes=@selectedListBoxAttr
-                               SortOrder="Syncfusion.Blazor.DropDowns.SortOrder.Ascending"
-                               Height=@ListBoxHeight>
+                           TItem="string"
+                           DataSource=@DataService.SelectedClasses
+                           AllowDragAndDrop="false"
+                           @ref="selectedCoursesListBox"
+                           SortOrder="Syncfusion.Blazor.DropDowns.SortOrder.Ascending"
+                           Height=@ListBoxHeight>
                     </SfListBox>
                 </div>
             </div>
@@ -112,7 +111,7 @@ else
                     <ListBoxSelectionSettings Mode="Syncfusion.Blazor.DropDowns.SelectionMode.Single" />
                 </SfListBox>
             </div>
-            <div class="col-lg-6" style="margin: auto auto auto auto">
+            <div class="col-lg-6" style="margin: auto">
                 <div class="row">
                     @* Placeholder for message bar *@
                 </div>
@@ -138,11 +137,6 @@ else
     SfListBox<string[], string> selectedCoursesListBox;
     SfListBox<string[], Schedule> availableSchedulesListBox;
 
-    readonly Dictionary<string, object> availableListBoxAttr = new() { { "id", "availableScope" } };
-    readonly Dictionary<string, object> selectedListBoxAttr = new() { { "id", "selectedScope" } };
-
-    private readonly string[] toolBarItems = { "MoveTo", "MoveFrom", "MoveAllTo", "MoveAllFrom" };
-
     private bool listBoxLinked = false;
 
     private bool noAvailableSchedule = false;
@@ -157,8 +151,11 @@ else
         set { DataService.SearchBoxText = value; OnFilterChanged(); }
     }
 
+    private JsonSerializerOptions jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
+
     protected override async Task OnInitializedAsync()
     {
+        DataService.TermChanged += (sender, args) => StateHasChanged();
         await DataServiceSingleton.InitializeAsync();
         await DataService.InitializeAsync(DataServiceSingleton);
         await base.OnInitializedAsync();
@@ -174,6 +171,38 @@ else
             StateHasChanged();
             listBoxLinked = true;
         }
+    }
+
+    void OnClickMoveTo()
+    {
+        if (availableCoursesListBox.Value == null) return;
+        string[] values = availableCoursesListBox.Value;
+        availableCoursesListBox.RemoveItemAsync(values);
+        selectedCoursesListBox.AddItemsAsync(values);
+        
+        // select the next item
+        var nextItem = availableCoursesListBox.GetDataList().FirstOrDefault();
+        if (nextItem != null) availableCoursesListBox.SelectItemsAsync(nextItem);
+    }
+
+    void OnClickMoveFrom()
+    {
+        if (selectedCoursesListBox.Value == null) return;
+        string[] values = selectedCoursesListBox.Value;
+        selectedCoursesListBox.RemoveItemAsync(values);
+        availableCoursesListBox.AddItemsAsync(values);
+
+        // select the next item
+        var nextItem = selectedCoursesListBox.GetDataList().FirstOrDefault();
+        if (nextItem != null) selectedCoursesListBox.SelectItemsAsync(nextItem);
+    }
+
+
+    void OnClickMoveAllFrom()
+    {
+        IEnumerable<string> values = selectedCoursesListBox.GetDataList();
+        availableCoursesListBox.AddItemsAsync(values);
+        selectedCoursesListBox.RemoveItemAsync(values);
     }
 
     /// <summary>
@@ -253,13 +282,14 @@ else
         var result = await Http.PostAsJsonAsync(
             $"https://api-autoschedule.azurewebsites.net/api/classselection/{maxSchedules}",
             selectedClasses);
-        var generatedSchedules = JsonSerializer.Deserialize<List<Schedule>>(result.Content.ReadAsStream());
+        var generatedSchedules = JsonSerializer.Deserialize<List<Schedule>>(result.Content.ReadAsStream(), jsonSerializerOptions);
 
         // Alert user if there is no available schedule.
         if (generatedSchedules.Count == 0) noAvailableSchedule = true;
 
         DataService.AvailableSchedules.Clear();
         foreach (var item in generatedSchedules) DataService.AvailableSchedules.Add(item);
+        StateHasChanged();
     }
 
     private void OnClickViewSchedule()
@@ -268,6 +298,6 @@ else
 
         DataService.CurrentSchedule = DataService.AvailableSchedules
             .FirstOrDefault(s => s.Id == availableSchedulesListBox.Value[0]);
-        navigationManager.NavigateTo("schedulepage");
+        NavigationManager.NavigateTo("schedulepage");
     }
 }

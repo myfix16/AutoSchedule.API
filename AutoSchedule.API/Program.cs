@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace AutoSchedule.API
 {
+    // todo: support for multi terms
     // ReSharper disable once ClassNeverInstantiated.Global
     public class Program
     {

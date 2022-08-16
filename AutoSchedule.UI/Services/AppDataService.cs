@@ -48,6 +48,8 @@ namespace AutoSchedule.UI.Services
 
         AppDataServiceSingleton _appDataServiceSingleton;
 
+        public event EventHandler TermChanged;
+
         public async Task InitializeAsync(AppDataServiceSingleton appDataServiceSingleton)
         {
             if (!Initialized)
@@ -56,6 +58,7 @@ namespace AutoSchedule.UI.Services
                 // await for the result. Else, start am initializing task and await for the result.
                 _initializingTask ??= InitializeAsyncActual(appDataServiceSingleton);
                 await _initializingTask;
+                Initialized = true;
             }
         }
 
@@ -65,9 +68,8 @@ namespace AutoSchedule.UI.Services
             await appDataServiceSingleton.InitializeAsync();
 
             // Initialize terms data
-            await SetSelectedTerm(appDataServiceSingleton.Terms.Max());
-
-            Initialized = true;
+            SelectedTerm ??= appDataServiceSingleton.Terms.Max();
+            await LoadSessionData(SelectedTerm);
 #if DEBUG
             Console.WriteLine("DataService initialized.");
 #endif
@@ -75,7 +77,6 @@ namespace AutoSchedule.UI.Services
 
         private async Task LoadSessionData(string term)
         {
-            Initialized = false;
             FilteredClasses.Clear();
             SelectedClasses.Clear();
 
@@ -89,7 +90,6 @@ namespace AutoSchedule.UI.Services
                 FilteredClasses.Add(item);
             }
 
-            Initialized = true;
 #if DEBUG
             Console.WriteLine($"Term {term} loaded.");
 #endif
@@ -98,7 +98,10 @@ namespace AutoSchedule.UI.Services
         internal async Task SetSelectedTerm(string term)
         {
             SelectedTerm = term;
+            Initialized = false;
             await LoadSessionData(term);
+            Initialized = true;
+            TermChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

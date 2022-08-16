@@ -89,7 +89,7 @@ namespace AutoSchedule.Core.Models
         public Schedule() { }
 
         [JsonConstructor]
-        public Schedule(string id, IEnumerable<Session> sessions)
+        public Schedule(string id, ObservableCollection<Session> sessions)
         {
             Id = id;
             Sessions = new ObservableCollection<Session>(sessions);
