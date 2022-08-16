@@ -25,6 +25,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <_WebToolingArtifacts Remove="Properties\PublishProfiles\AutoSchedule - Release - Web Deploy.pubxml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!--<PackageReference Include="BlazorFluentUI.BFUBaseComponent" Version="4.0.2" />
     <PackageReference Include="BlazorFluentUI.BFUButton" Version="4.0.2" />
     <PackageReference Include="BlazorFluentUI.BFUComponentStyle" Version="4.0.2" />
